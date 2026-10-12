@@ -1,7 +1,7 @@
 // Widget: loads one pet from a pack (pixel-pet-pals/pack@1) and reacts to v1 events via SSE.
 (async function () {
   const q = new URLSearchParams(location.search);
-  const STREAM = q.get("stream") || "/stream", PACKS = (q.get("packs") || "/packs").replace(/\/$/, "");
+  const STREAM = q.get("stream") || "/stream", PACKS = (q.get("packs") || "../packs").replace(/\/$/, "");
   const PET = q.get("pet") || "olmlet", card = document.getElementById("w"), el = document.getElementById("pet");
   const $ = id => document.getElementById(id);
   if (q.get("size") === "compact") card.classList.add("compact");
@@ -43,5 +43,15 @@
   }
   window.__petOnEvent = onEvent;
   play("sleep");
+  // Static demo mode (no relay): ?demo=<type or activity category>&ago=<minutes>&target=&skill=
+  const demo = q.get("demo");
+  if (demo) {
+    const ts = new Date(Date.now() - (+q.get("ago") || 0) * 60000).toISOString(), CATS = ["skilling","combat","bossing","banking","traveling","minigame"];
+    const e = CATS.includes(demo) ? { type: "activity", activity: { category: demo, skill: q.get("skill") || undefined, target: q.get("target") || undefined } }
+      : { type: demo, detail: { skill: q.get("skill") || undefined, level: +q.get("level") || undefined, pet: q.get("target") || undefined } };
+    onEvent({ v: 1, player: q.get("name") || "Matthew", ts, ...e });
+    if (e.type === "level_up" || e.type === "pet_drop") { clearTimeout(reset); }  // keep the party pose for the demo
+    return;
+  }
   new EventSource(STREAM).onmessage = ev => { try { onEvent(JSON.parse(ev.data)); } catch (err) { console.error(err); } };
 })();

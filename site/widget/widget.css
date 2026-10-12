@@ -1,0 +1,34 @@
+/* Card styling adapted from design/widget/widget.css (approved mockup). */
+@font-face { font-family: "PixelifySans"; src: url("fonts/PixelifySans.ttf"); }
+:root { --card:#fff8ec; --ink:#2b1e26; --accent:#7cc7a8; --rose:#f0788c; --muted:#8a7468; }
+* { box-sizing: border-box; }
+body { margin:0; padding:6px; font-family:"PixelifySans", monospace; color:var(--ink); background:transparent; }
+body.bg { background:#f6ecdc; }
+.ppp { position:relative; display:flex; align-items:center; gap:12px; width:360px; height:120px;
+  padding:10px 14px 10px 10px; background:var(--card); border:3px solid var(--ink); border-radius:6px;
+  box-shadow:4px 4px 0 rgba(43,30,38,.35); overflow:hidden; }
+.ppp .stage { position:relative; flex:0 0 100px; height:100px; background:linear-gradient(#e8f4ec 0 70%, #cfe6d6 70%);
+  border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
+.ppp .pet { position:absolute; left:50%; bottom:0; image-rendering:pixelated; background-repeat:no-repeat; transform:translateX(-50%); }
+.ppp .pet.flip { transform:translateX(-50%) scaleX(-1); }
+.ppp.party .pet { animation:hop .3s 4 alternate; }
+@keyframes hop { to { margin-bottom:8px; } }
+.ppp .info { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; z-index:1; }
+.ppp .name { font-size:20px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ppp .status { font-size:15px; line-height:1.15; display:flex; align-items:baseline; flex-wrap:wrap; column-gap:5px; }
+.ppp .dot { width:8px; height:8px; background:var(--accent); border:2px solid var(--ink); flex:0 0 auto; align-self:center; }
+.ppp.off .dot { background:#bbb; }
+.ppp.party .dot { background:#ffd65c; }
+.ppp .since { color:var(--muted); white-space:nowrap; }
+.ppp .legal { font-size:10px; color:var(--muted); margin-top:4px; }
+.ppp .badge { position:absolute; right:8px; top:6px; font-size:11px; background:var(--rose); color:#fff;
+  border:2px solid var(--ink); padding:0 5px; display:none; z-index:2; }
+.ppp.party .badge { display:block; }
+/* Compact 240x80. Fix: status wraps (no nowrap/overflow clip), so "Logged out · sleeping · 2h" shows in full. */
+.ppp.compact { width:240px; height:80px; gap:8px; padding:5px 6px 5px 5px; }
+.ppp.compact .stage { flex-basis:68px; height:68px; }
+.ppp.compact .info { gap:1px; }
+.ppp.compact .name { font-size:14px; }
+.ppp.compact .status { font-size:11px; }
+.ppp.compact .legal { font-size:8px; margin-top:1px; }
+.ppp.compact .badge { font-size:9px; }
