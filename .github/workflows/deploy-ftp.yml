@@ -1,0 +1,174 @@
+# Manual-only FTP deploy of the static site/ folder to
+# public_html/matthew/pixel-pet-pals/ (https://mrruth.com/matthew/pixel-pet-pals/).
+# Only the contents of site/ at an explicitly chosen ref are uploaded. Never runs
+# on push/PR/schedule. See docs/DEPLOY-ACTIONS.md.
+name: Deploy Pixel Pet Pals site (FTP)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Commit SHA (short or full) or tag to deploy. Branch names are refused."
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run: only list what would change, upload nothing"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-ftp-pixel-pet-pals
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.ref }} (dry_run=${{ inputs.dry_run }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEPLOY_REF: ${{ inputs.ref }}
+      DRY_RUN: ${{ inputs.dry_run }}
+      TREE: _deploy_tree
+      LIVE_URL: https://mrruth.com/matthew/pixel-pet-pals/
+      BROWSER_UA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+    steps:
+      - name: Checkout (full history, so short SHAs and tags resolve)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve the requested ref
+        id: ref
+        run: |
+          set -euo pipefail
+          ref="$DEPLOY_REF"
+          if ! printf '%s' "$ref" | grep -Eq '^[A-Za-z0-9._/-]+$'; then
+            echo "::error::ref contains unexpected characters: $ref"; exit 1
+          fi
+          if git show-ref --verify --quiet "refs/remotes/origin/$ref" \
+             && ! git show-ref --verify --quiet "refs/tags/$ref"; then
+            echo "::error::'$ref' is a branch name. Deploy a commit SHA or a tag instead."; exit 1
+          fi
+          sha="$(git rev-parse --verify --quiet "${ref}^{commit}")" || {
+            echo "::error::ref '$ref' does not resolve to a commit"; exit 1; }
+          if ! git cat-file -e "$sha:site/index.html" 2>/dev/null; then
+            echo "::error::$sha has no site/index.html; nothing to deploy."; exit 1
+          fi
+          git checkout --quiet --detach "$sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Deploy Pixel Pet Pals site (FTP)"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Requested ref | \`$ref\` |"
+            echo "| Resolved SHA | \`$sha\` |"
+            echo "| Target | FTP \`pixel-pet-pals/\` ($LIVE_URL) |"
+            echo "| Dry run | \`$DRY_RUN\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build deploy tree (git archive of site/ only)
+        env:
+          SHA: ${{ steps.ref.outputs.sha }}
+        run: |
+          set -euo pipefail
+          rm -rf "$TREE"
+          mkdir -p "$TREE"
+          # Contents of site/ map 1:1 into pixel-pet-pals/ on the server.
+          git archive --format=tar "$SHA" site/ | tar -x --strip-components=1 -C "$TREE"
+          find "$TREE" \( -name '.git' -o -name '.DS_Store' -o -name '*.swp' -o -name '*~' -o -name 'node_modules' \) \
+               -prune -exec rm -rf {} +
+          echo "Deploy tree: $(find "$TREE" -type f | wc -l) files, $(du -sh "$TREE" | cut -f1)"
+          (cd "$TREE" && find . -type f | sed 's|^\./||' | sort)
+
+      - name: Guard - refuse private files in the deploy tree
+        run: |
+          set -euo pipefail
+          bad="$(cd "$TREE" && find . \
+              \( \( -name '*config*.php' ! -name '*.sample.php' \) \
+                 -o \( -type d \( -name data -o -name backups -o -name state -o -name secrets \
+                                 -o -name private -o -name node_modules -o -name .git \) \) \
+                 -o -path '*/data/*' -o -path '*/backups/*' -o -path '*/state/*' \
+                 -o -name '*.sqlite*' -o -name '*.db' -o -name '.env*' -o -name '*.csv' \
+                 -o -name 'upgrade.key' -o -name '*.key' -o -name '*.pem' -o -name '*.p12' \
+                 -o -name '.htpasswd*' -o -name 'roster*' -o -name '*-players.json' \
+                 -o -name 'credentials*' -o -name '*.secret' -o -name '.npmrc' -o -name '.netrc' \
+                 -o -name 'error_log' -o -name '*.log' -o -name '*.bak' \
+                 -o -name '.ftp-deploy-sync-state*' \
+              \) -print | sort)"
+          # Common credential formats (GitHub/Slack/AWS/Discord tokens, private keys, webhooks).
+          secrets="$(grep -rlIE 'gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|xox[abprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|discord(app)?\.com/api/webhooks/[0-9]+/' "$TREE" || true)"
+          if [ -n "$bad$secrets" ]; then
+            echo "::error::Refusing to deploy: private/forbidden paths or secrets in the deploy tree"
+            printf '%s\n' "$bad" "$secrets"
+            { echo ""; echo "### :x: Guard failed"; echo '```'; printf '%s\n' "$bad" "$secrets"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "Guard passed."
+          echo "- Guard passed ($(find "$TREE" -type f | wc -l) files in tree)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: FTP deploy (dry_run=${{ inputs.dry_run }})
+        id: deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./_deploy_tree/
+          server-dir: pixel-pet-pals/
+          state-name: .ftp-deploy-sync-state-pixel-pet-pals.json
+          dry-run: ${{ inputs.dry_run }}
+          log-level: standard
+          # Filters the LOCAL tree (second line of defence after the guard).
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+            config.php
+            **/data/**
+            **/backups/**
+            **/state/**
+            **/secrets/**
+            **/private/**
+            **/*.sqlite*
+            **/*.db
+            **/.env*
+            **/*.csv
+            upgrade.key
+            *.key
+            *.pem
+            .htpasswd*
+            roster*
+            credentials*
+            .npmrc
+            .netrc
+            error_log
+            *.log
+            *.bak
+
+      - name: Live check of index.html (single attempt)
+        if: ${{ !inputs.dry_run && steps.deploy.outcome == 'success' }}
+        run: |
+          set -uo pipefail
+          want="$(sha256sum "$TREE/index.html" | cut -d' ' -f1)"
+          code="$(curl -sS --max-time 20 -A "$BROWSER_UA" \
+            -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
+            -H 'Accept-Language: en-US,en;q=0.9' -H 'Cache-Control: no-cache' \
+            -o "$RUNNER_TEMP/live-index.html" -w '%{http_code}' "${LIVE_URL}index.html?nocache=$GITHUB_RUN_ID")" || code="curl-error"
+          got="$(sha256sum "$RUNNER_TEMP/live-index.html" 2>/dev/null | cut -d' ' -f1)"
+          { echo ""; echo "### Live check"; echo "- \`${LIVE_URL}index.html\`: HTTP \`$code\`"; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" = 200 ] && [ "$want" = "$got" ]; then
+            echo "Live index.html matches the deployed ref."
+            echo "- :white_check_mark: index.html matches the deployed ref" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Live index.html: HTTP $code, content $( [ "$want" = "$got" ] && echo matches || echo differs ). Not retrying; check manually."
+            echo "- :warning: index.html HTTP $code / differs from the deployed ref" >> "$GITHUB_STEP_SUMMARY"
+          fi
