@@ -1,2 +1,2 @@
 { "name": "pixel-pet-pals", "version": "0.1.0", "private": true, "license": "BSD-2-Clause",
-  "scripts": { "relay": "node relay/server.js", "mock": "node mock-sender/send.js", "test": "node test/smoke.js" } }
+  "scripts": { "relay": "node relay/server.js", "mock": "node mock-sender/send.js", "test": "node test/unit.js && node test/smoke.js" } }

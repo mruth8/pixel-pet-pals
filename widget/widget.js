@@ -14,26 +14,12 @@
     const draw = () => { el.style.backgroundPosition = `-${frame * pet.frameSize.w * SCALE}px -${a.row * pet.frameSize.h * SCALE}px`; frame = (frame + 1) % a.frames; };
     el.style.backgroundSize = `${pet.sheetSize.w * SCALE}px ${pet.sheetSize.h * SCALE}px`; draw(); timer = setInterval(draw, 1000 / a.fps);
   };
-  const VERB = { Woodcutting: "Chopping", Fishing: "Fishing", Mining: "Mining", Cooking: "Cooking" };
-  function status(e) {
-    const a = e.activity || {};
-    switch (e.type) {
-      case "login": return "Logged in"; case "logout": return "Logged out (sleeping)";
-      case "idle": return "Idle (sleeping)"; case "level_up": return `Level up! ${e.detail?.skill || ""} ${e.detail?.level || ""}`;
-      case "loot": return `Loot: ${e.detail?.item || "something"}`; case "pet_drop": return `Pet drop: ${e.detail?.pet || "!"}`;
-      case "death": return "Oh dear, died"; case "quest": return `Quest: ${e.detail?.name || ""}`;
-    }
-    if (a.category === "skilling") return `${VERB[a.skill] || a.skill || "Skilling"} ${a.target || ""}`.trim();
-    if (a.category === "bossing" || a.category === "combat") return `Fighting ${a.target || "monsters"}`;
-    if (a.category === "traveling") return `Traveling${a.region ? " to " + a.region : ""}`;
-    return a.category ? a.category[0].toUpperCase() + a.category.slice(1) : e.type;
-  }
   function onEvent(e) {
     if (e.v !== 1) return console.warn("unsupported event version", e.v);
     if (q.get("player") && e.player !== q.get("player")) return;
     if (e.type === "heartbeat") return;
     document.getElementById("player").textContent = e.player;
-    document.getElementById("status").textContent = status(e);
+    document.getElementById("status").textContent = PPPStatus.statusText(e);
     clearTimeout(reset); el.classList.remove("bounce");
     const celebrate = e.type === "level_up" || e.type === "pet_drop" || (e.type === "loot" && e.detail?.rare);
     if (celebrate) { void el.offsetWidth; el.classList.add("bounce"); play("celebrate"); reset = setTimeout(() => play("happy"), 3000); }
