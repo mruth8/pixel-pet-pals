@@ -4,8 +4,8 @@
   function statusText(e) {
     const a = e.activity || {};
     switch (e.type) {
-      case "login": return "Logged in"; case "logout": return "Logged out (sleeping)";
-      case "idle": return "Idle (sleeping)"; case "level_up": return `Level up! ${e.detail?.skill || ""} ${e.detail?.level || ""}`;
+      case "login": return "Logged in"; case "logout": return "Logged out · sleeping";
+      case "idle": return "Idle · zzz"; case "level_up": return `Level up! ${e.detail?.skill || ""} ${e.detail?.level || ""}`.trim();
       case "loot": return `Loot: ${e.detail?.item || "something"}`; case "pet_drop": return `Pet drop: ${e.detail?.pet || "!"}`;
       case "death": return "Oh dear, died"; case "quest": return (e.detail?.name ? `Quest: ${e.detail.name}` : "Quest complete!");
     }

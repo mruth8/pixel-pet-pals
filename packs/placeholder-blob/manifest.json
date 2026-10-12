@@ -1,25 +1,19 @@
 {
-  "packVersion": 1,
-  "id": "placeholder",
-  "name": "Placeholder pack (dev only, not final art)",
-  "pets": [{
-    "id": "blob",
-    "name": "Blob",
-    "spriteSheet": "blob.svg",
-    "frameSize": { "w": 32, "h": 32 },
-    "sheetSize": { "w": 64, "h": 224 },
-    "animations": {
-      "idle": { "row": 0, "frames": 2, "fps": 2 },
-      "walk": { "row": 1, "frames": 2, "fps": 6 },
-      "sleep": { "row": 2, "frames": 2, "fps": 1 },
-      "happy": { "row": 3, "frames": 2, "fps": 6 },
-      "celebrate": { "row": 4, "frames": 2, "fps": 8 },
-      "skilling": { "row": 5, "frames": 2, "fps": 4 },
-      "combat": { "row": 6, "frames": 2, "fps": 6 },
-      "bossing": { "row": 6, "frames": 2, "fps": 8 },
-      "banking": { "row": 0, "frames": 2, "fps": 2 },
-      "traveling": { "row": 1, "frames": 2, "fps": 6 },
-      "minigame": { "row": 3, "frames": 2, "fps": 4 }
-    }
-  }]
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "placeholder-blob",
+  "name": "Blob (dev placeholder)",
+  "pack": "dev",
+  "version": "0.1.0",
+  "sheet": { "file": "blob.svg", "frameWidth": 32, "frameHeight": 32, "columns": 2, "rows": 7, "layout": "row-per-animation" },
+  "facing": "right",
+  "animations": {
+    "idle": { "row": 0, "frames": 2, "fps": 2, "loop": true },
+    "walk": { "row": 1, "frames": 2, "fps": 6, "loop": true },
+    "sleep": { "row": 2, "frames": 2, "fps": 1, "loop": true },
+    "happy": { "row": 3, "frames": 2, "fps": 6, "loop": true },
+    "celebrate": { "row": 4, "frames": 2, "fps": 8, "loop": true }
+  },
+  "activityMap": { "skilling": "happy", "combat": "walk", "bossing": "walk", "banking": "idle", "traveling": "walk", "minigame": "happy", "idle": "sleep" },
+  "eventMap": { "level_up": "celebrate", "pet_drop": "celebrate", "loot": "happy", "quest": "celebrate", "death": "sleep", "login": "happy", "logout": "sleep", "idle": "sleep" },
+  "default": "idle"
 }
