@@ -1,15 +1,10 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>Pixel Pet Pals (placeholder widget)</title>
-<!-- PLACEHOLDER UI: final look comes from design/ mockups. Keep logic in widget.js separate from styling. -->
-<style>
- body{margin:0;font:12px monospace;background:transparent;color:#eee}
- #card{display:inline-block;padding:8px;background:#222c;border-radius:6px;text-align:center;min-width:160px}
- #pet{width:96px;height:96px;margin:auto;image-rendering:pixelated;background-repeat:no-repeat}
- #pet.bounce{animation:b .3s 4 alternate}@keyframes b{to{transform:translateY(-10px)}}
- #note{font-size:9px;opacity:.6;margin-top:4px}
-</style></head>
-<body><div id="card">
- <div id="player">…</div><div id="pet" data-anim="sleep"></div><div id="status">Waiting for events</div>
- <div id="note">Not affiliated with Jagex</div>
-</div>
-<script src="widget.js"></script></body></html>
+<html><head><meta charset="utf-8"><title>Pixel Pet Pals widget</title>
+<link rel="stylesheet" href="widget.css">
+<!-- Params: ?pet=olmlet|baby-mole|baby-chinchompa  &variant=red  &size=compact  &stream=/stream  &packs=/packs  &player=Name  &bg=1 -->
+</head><body>
+<div class="ppp" id="w"><div class="badge"></div><div class="stage"><div class="pet" id="pet"></div></div>
+<div class="info"><div class="name" id="player">…</div>
+<div class="status" id="statusline"><span class="dot"></span><span class="text" id="status">Waiting for events</span><span class="since" id="since"></span></div>
+<div class="legal" id="note">Fan-made · Not affiliated with Jagex</div></div></div>
+<script src="../shared/pack.js"></script><script src="widget.js"></script></body></html>

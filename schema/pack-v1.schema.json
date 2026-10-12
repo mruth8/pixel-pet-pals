@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pixelpetpals.local/schema/pack-v1.schema.json",
+  "title": "Pixel Pet Pals pet pack manifest (pixel-pet-pals/pack@1)",
+  "type": "object",
+  "required": ["schema", "id", "name", "sheet", "animations"],
+  "properties": {
+    "schema": { "const": "pixel-pet-pals/pack@1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string" },
+    "pack": { "type": "string" },
+    "version": { "type": "string" },
+    "license": { "type": "string" },
+    "sheet": {
+      "type": "object",
+      "required": ["file", "frameWidth", "frameHeight", "columns", "rows"],
+      "properties": {
+        "file": { "type": "string" }, "frameWidth": { "type": "integer" }, "frameHeight": { "type": "integer" },
+        "columns": { "type": "integer" }, "rows": { "type": "integer" }, "layout": { "const": "row-per-animation" }
+      }
+    },
+    "anchor": { "type": "object" }, "offset": { "type": "object" }, "scale": { "type": "object" }, "paletteColors": { "type": "integer" },
+    "animations": {
+      "type": "object",
+      "required": ["idle", "walk", "sleep", "happy", "celebrate"],
+      "additionalProperties": {
+        "type": "object", "required": ["row", "frames", "fps"],
+        "properties": { "row": { "type": "integer" }, "frames": { "type": "integer" }, "fps": { "type": "number" }, "loop": { "type": "boolean" }, "frameFiles": { "type": "array" } }
+      }
+    },
+    "activityMap": { "type": "object", "additionalProperties": { "type": "string" } },
+    "eventMap": { "type": "object", "additionalProperties": { "type": "string" } },
+    "default": { "type": "string" },
+    "facing": { "enum": ["left", "right"], "default": "right", "description": "Optional. Direction the art faces; widget mirrors it so the pet faces the text." },
+    "variants": {
+      "type": "array", "description": "Optional colourways sharing the same layout/animations.",
+      "items": { "type": "object", "required": ["id", "sheet"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "sheet": { "type": "string" }, "paletteColors": { "type": "integer" } } }
+    },
+    "defaultVariant": { "type": "string", "description": "Optional. Variant used when none is requested; its sheet is sheet.file." },
+    "plannedVariants": { "type": "array" }
+  }
+}

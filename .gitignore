@@ -1,3 +1,4 @@
 node_modules/
 # design/ is owned by the in-progress design work; tracked separately once finalized
 design/
+screenshots/
