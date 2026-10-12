@@ -25,27 +25,13 @@
     const s = Math.max(0, (Date.now() - Date.parse(ts)) / 1000);
     return s < 60 ? "now" : s < 3600 ? Math.floor(s / 60) + "m" : s < 86400 ? Math.floor(s / 3600) + "h" : Math.floor(s / 86400) + "d";
   }
-  const VERB = { Woodcutting: "Chopping", Fishing: "Fishing", Mining: "Mining", Cooking: "Cooking" };
-  function status(e) {
-    const a = e.activity || {};
-    switch (e.type) {
-      case "login": return "Logged in"; case "logout": return "Logged out · sleeping";
-      case "idle": return "Idle · zzz"; case "level_up": return `Level up! ${e.detail?.skill || ""} ${e.detail?.level || ""}`.trim();
-      case "loot": return `Loot: ${e.detail?.item || "something"}`; case "pet_drop": return `Pet drop: ${e.detail?.pet || "!"}`;
-      case "death": return "Oh dear, died"; case "quest": return `Quest: ${e.detail?.name || ""}`;
-    }
-    if (a.category === "skilling") return `${VERB[a.skill] || a.skill || "Skilling"} ${a.target || ""}`.trim();
-    if (a.category === "bossing" || a.category === "combat") return `Fighting ${a.target || "monsters"}`;
-    if (a.category === "traveling") return `Traveling${a.region ? " to " + a.region : ""}`;
-    return a.category ? a.category[0].toUpperCase() + a.category.slice(1) : e.type;
-  }
   const tick = () => $("since").textContent = since && ["logout", "idle", "activity"].includes(card.dataset.type) ? "· " + ago(since) : "";
   setInterval(tick, 30000);
   function onEvent(e) {
     if (e.v !== 1) return console.warn("unsupported event version", e.v);
     if (q.get("player") && e.player !== q.get("player")) return;
     if (e.type === "heartbeat") return;
-    $("player").textContent = e.player; $("status").textContent = status(e);
+    $("player").textContent = e.player; $("status").textContent = PPPStatus.statusText(e);
     card.dataset.type = e.type; since = e.ts; tick();
     card.classList.toggle("off", e.type === "logout");
     clearTimeout(reset); card.classList.remove("party");

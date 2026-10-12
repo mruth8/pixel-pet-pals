@@ -2,7 +2,10 @@
 // Also serves widget/, packs/, shared/ statically. No deps.
 const http = require("http"), fs = require("fs"), path = require("path");
 const { validateEventV1 } = require("../shared/validate");
+const argHost = process.argv.indexOf("--host");
 const PORT = +process.env.PORT || 8787;
+// Loopback only by default. Opt in to LAN/public with PET_HOST=0.0.0.0 (or --host 0.0.0.0); set PET_SECRET when you do.
+const HOST = (argHost > 0 && process.argv[argHost + 1]) || process.env.PET_HOST || "127.0.0.1";
 const SECRET = process.env.PET_SECRET || "";
 const ROOT = path.join(__dirname, "..");
 const MIME = { ".html":"text/html", ".js":"text/javascript", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png", ".css":"text/css" };
@@ -35,4 +38,7 @@ http.createServer((req, res) => {
   const f = path.normalize(path.join(ROOT, p));
   if (!f.startsWith(ROOT) || !/^\/(widget|packs|shared)\//.test(p)) { res.writeHead(404); return res.end(); }
   fs.readFile(f, (e, d) => { if (e) { res.writeHead(404); return res.end(); } res.writeHead(200, {"content-type": MIME[path.extname(f)] || "application/octet-stream"}); res.end(d); });
-}).listen(PORT, () => console.log(`relay on http://localhost:${PORT}  (widget at /, POST /events)`));
+}).listen(PORT, HOST, () => {
+  console.log(`relay on http://${HOST}:${PORT}  (widget at /widget/, POST /events)`);
+  if (HOST !== "127.0.0.1" && HOST !== "localhost" && HOST !== "::1" && !SECRET) console.warn("WARNING: listening beyond loopback without PET_SECRET; anyone who can reach it can post events.");
+});
