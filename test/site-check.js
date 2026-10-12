@@ -29,26 +29,36 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
   for (const [vw, slash] of [[1100, true], [1100, false], [390, true], [390, false]]) {
     const tag = `${vw}px ${slash ? "slash" : "no-slash"}`; console.log("--", tag); misses.length = 0;
     await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
-    await call("Page.navigate", { url: `http://localhost:${PORT}${slash ? PREFIX : PREFIX.slice(0, -1)}` }); await sl(4000);
+    await call("Page.navigate", { url: `http://localhost:${PORT}${slash ? PREFIX : PREFIX.slice(0, -1)}` }); await sl(1500);
+    // loading="lazy" iframes only load near the viewport: scroll each into view and wait for its widget.
+    await call("Runtime.evaluate", { awaitPromise: true, expression: `(async()=>{for(const f of document.querySelectorAll("iframe.live")){f.scrollIntoView();
+      for(let i=0;i<60&&!(f.contentDocument&&f.contentDocument.getElementById("pet")&&f.contentDocument.getElementById("pet").style.backgroundImage&&f.contentDocument.getElementById("player").textContent!=="…");i++)await new Promise(r=>setTimeout(r,100));}
+      await document.fonts.ready; scrollTo(0,0); await new Promise(r=>setTimeout(r,300));})()` });
     const r = (await call("Runtime.evaluate", { returnByValue: true, expression: `(()=>{
       const imgs=[...document.images].filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src);
+      const distorted=[...document.images].filter(i=>i.naturalWidth&&Math.abs(i.clientWidth/i.clientHeight-i.naturalWidth/i.naturalHeight)>0.03).map(i=>i.getAttribute("src"));
+      const petNames=[...document.querySelectorAll(".pets h3, .colours figcaption")].map(e=>e.textContent);
       const vw=document.documentElement.clientWidth, overflow=document.documentElement.scrollWidth-vw;
       const ws=[...document.querySelectorAll("iframe.live")].map(f=>{const d=f.contentDocument,p=d.getElementById("pet"),c=d.getElementById("w"),st=d.getElementById("statusline");
         const cr=c.getBoundingClientRect(),sr=st.getBoundingClientRect(),box=f.parentElement.getBoundingClientRect(),fr=f.getBoundingClientRect();
         return {src:f.getAttribute("src"),pet:p.dataset.pet,facing:p.dataset.facing,flip:p.classList.contains("flip"),bg:!!p.style.backgroundImage,
           textRightOfPet:d.querySelector(".info").getBoundingClientRect().left>p.getBoundingClientRect().right,
+          legalOk:(()=>{const l=d.getElementById("note");return /trademark of Jagex Ltd/.test(l.textContent)&&l.getBoundingClientRect().bottom<=cr.bottom-2&&l.getBoundingClientRect().right<=cr.right})(),
+          inStage:(()=>{const a=p.getBoundingClientRect(),b=d.querySelector(".stage").getBoundingClientRect();return a.top>=b.top-0.5&&a.bottom<=b.bottom+0.5&&a.left>=b.left-0.5&&a.right<=b.right+0.5})(),
           text:st.textContent.replace(/\\s+/g," ").trim(),clipped:[...st.children].some(e=>e.scrollWidth>e.clientWidth+1)||sr.right>cr.right||sr.bottom>cr.bottom,
           fitsFrame:cr.right+7<=f.clientWidth&&cr.bottom<=f.clientHeight&&d.documentElement.scrollWidth<=f.clientWidth,
           onScreen:fr.right<=box.right+0.5&&box.right<=vw+0.5, scale:f.style.transform||"none"}});
-      return {imgs,ws,overflow,base:document.baseURI}})()` })).result.value;
+      return {imgs,distorted,petNames,ws,overflow,base:document.baseURI}})()` })).result.value;
     if (r.imgs.length) fail(tag + " broken images " + r.imgs);
+    if (r.distorted.length) fail(tag + " distorted images " + r.distorted);
+    for (const n of ["Olmlet","Baby Mole","Baby Chinchompa","Heron","Rocky","Phoenix","Lil' Zik","Beef","Youngllef","Crystal Youngllef","Abyssal orphan","Butch","Lil'viathan"]) if (!r.petNames.includes(n)) fail(tag + " pet missing " + n);
     if (r.overflow > 0) fail(tag + " page overflows by " + r.overflow + "px");
     if (!r.base.endsWith(PREFIX)) fail(tag + " baseURI " + r.base);
     for (const w of r.ws) {
       if (vw < 500) console.log(" ", w.pet, w.scale, "onScreen=" + w.onScreen);
       if (!w.bg) fail(tag + " no sprite " + w.src);
       if (w.flip !== (w.facing === "left") || !w.textRightOfPet) fail(tag + " pet not facing text " + w.src);
-      if (w.clipped || !w.fitsFrame || !w.onScreen) fail(tag + " clipped " + JSON.stringify(w));
+      if (w.clipped || !w.fitsFrame || !w.onScreen || !w.legalOk || !w.inStage) fail(tag + " clipped " + JSON.stringify(w));
     }
     const lo = r.ws.find(w => w.src.includes("size=compact") && w.src.includes("demo=logout"));
     if (!lo || !/Logged out · sleeping ?· 2h/.test(lo.text)) fail(tag + " compact logout text: " + (lo && lo.text));
@@ -57,7 +67,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
     const m = await call("Page.getLayoutMetrics"); const h = Math.ceil(m.cssContentSize.height);
     const s = await call("Page.captureScreenshot", { captureBeyondViewport: true, clip: { x: 0, y: 0, width: vw, height: h, scale: 1 } });
     fs.mkdirSync(OUT, { recursive: true });
-    const name = vw === 1100 && slash ? "site.png" : `site-${vw}${slash ? "" : "-noslash"}.png`;
+    const name = `v4-site-${vw}${slash ? "" : "-noslash"}.png`;
     fs.writeFileSync(path.join(OUT, name), Buffer.from(s.data, "base64")); console.log("  screenshot -> screenshots/" + name);
   }
   ch.kill(); srv.close(); console.log(bad ? `FAIL (${bad})` : "PASS: site check"); process.exit(bad ? 1 : 0);

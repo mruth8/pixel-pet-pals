@@ -31,7 +31,7 @@
     "activityMap": { "type": "object", "additionalProperties": { "type": "string" } },
     "eventMap": { "type": "object", "additionalProperties": { "type": "string" } },
     "default": { "type": "string" },
-    "facing": { "enum": ["left", "right"], "default": "right", "description": "Optional. Direction the art faces; widget mirrors it so the pet faces the text." },
+    "facing": { "enum": ["left", "right", "front"], "default": "right", "description": "Optional. Direction the art faces; left is mirrored so the pet faces the text, front is never mirrored." },
     "variants": {
       "type": "array", "description": "Optional colourways sharing the same layout/animations.",
       "items": { "type": "object", "required": ["id", "sheet"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "sheet": { "type": "string" }, "paletteColors": { "type": "integer" } } }

@@ -1,0 +1,133 @@
+{
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "youngllef",
+  "name": "Youngllef",
+  "pack": "A-osrs-style",
+  "version": "0.4.0",
+  "license": "LICENSE.md",
+  "sheet": {
+    "file": "variants/corrupted/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "columns": 8,
+    "rows": 5,
+    "layout": "row-per-animation"
+  },
+  "anchor": {
+    "x": 16,
+    "y": 30
+  },
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "facing": "left",
+  "scale": {
+    "recommended": 4,
+    "filter": "nearest"
+  },
+  "paletteColors": 13,
+  "animations": {
+    "idle": {
+      "row": 0,
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "frameFiles": [
+        "variants/crystal/frames/idle_00.png",
+        "variants/crystal/frames/idle_01.png",
+        "variants/crystal/frames/idle_02.png",
+        "variants/crystal/frames/idle_03.png"
+      ]
+    },
+    "walk": {
+      "row": 1,
+      "frames": 6,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+        "variants/crystal/frames/walk_00.png",
+        "variants/crystal/frames/walk_01.png",
+        "variants/crystal/frames/walk_02.png",
+        "variants/crystal/frames/walk_03.png",
+        "variants/crystal/frames/walk_04.png",
+        "variants/crystal/frames/walk_05.png"
+      ]
+    },
+    "sleep": {
+      "row": 2,
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "frameFiles": [
+        "variants/crystal/frames/sleep_00.png",
+        "variants/crystal/frames/sleep_01.png",
+        "variants/crystal/frames/sleep_02.png",
+        "variants/crystal/frames/sleep_03.png"
+      ]
+    },
+    "happy": {
+      "row": 3,
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+        "variants/crystal/frames/happy_00.png",
+        "variants/crystal/frames/happy_01.png",
+        "variants/crystal/frames/happy_02.png",
+        "variants/crystal/frames/happy_03.png"
+      ]
+    },
+    "celebrate": {
+      "row": 4,
+      "frames": 8,
+      "fps": 10,
+      "loop": true,
+      "frameFiles": [
+        "variants/crystal/frames/celebrate_00.png",
+        "variants/crystal/frames/celebrate_01.png",
+        "variants/crystal/frames/celebrate_02.png",
+        "variants/crystal/frames/celebrate_03.png",
+        "variants/crystal/frames/celebrate_04.png",
+        "variants/crystal/frames/celebrate_05.png",
+        "variants/crystal/frames/celebrate_06.png",
+        "variants/crystal/frames/celebrate_07.png"
+      ]
+    }
+  },
+  "activityMap": {
+    "skilling": "happy",
+    "combat": "walk",
+    "bossing": "walk",
+    "banking": "idle",
+    "traveling": "walk",
+    "minigame": "happy",
+    "idle": "sleep"
+  },
+  "eventMap": {
+    "level_up": "celebrate",
+    "pet_drop": "celebrate",
+    "loot": "happy",
+    "quest": "celebrate",
+    "death": "sleep",
+    "login": "happy",
+    "logout": "sleep",
+    "idle": "sleep"
+  },
+  "default": "idle",
+  "defaultVariant": "corrupted",
+  "variants": [
+    {
+      "id": "corrupted",
+      "name": "Corrupted",
+      "sheet": "variants/corrupted/sheet.png",
+      "paletteColors": 13
+    },
+    {
+      "id": "crystal",
+      "name": "Crystal",
+      "sheet": "variants/crystal/sheet.png",
+      "paletteColors": 13
+    }
+  ]
+}

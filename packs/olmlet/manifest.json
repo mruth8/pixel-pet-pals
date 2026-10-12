@@ -3,19 +3,19 @@
   "id": "olmlet",
   "name": "Olmlet",
   "pack": "A-osrs-style",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "LICENSE.md",
   "sheet": {
     "file": "sheet.png",
     "frameWidth": 32,
-    "frameHeight": 32,
+    "frameHeight": 40,
     "columns": 8,
     "rows": 5,
     "layout": "row-per-animation"
   },
   "anchor": {
     "x": 16,
-    "y": 30
+    "y": 38
   },
   "offset": {
     "x": 0,

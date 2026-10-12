@@ -11,8 +11,7 @@ body.bg { background:#f6ecdc; }
   border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
 .ppp .pet { position:absolute; left:50%; bottom:0; image-rendering:pixelated; background-repeat:no-repeat; transform:translateX(-50%); }
 .ppp .pet.flip { transform:translateX(-50%) scaleX(-1); }
-.ppp.party .pet { animation:hop .3s 4 alternate; }
-@keyframes hop { to { margin-bottom:8px; } }
+/* No CSS hop on party: the celebrate frames already hop, and an extra 8px pushed full-height pets out of the stage. */
 .ppp .info { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; z-index:1; }
 .ppp .name { font-size:20px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ppp .status { font-size:15px; line-height:1.15; display:flex; align-items:baseline; flex-wrap:wrap; column-gap:5px; }
@@ -32,3 +31,7 @@ body.bg { background:#f6ecdc; }
 .ppp.compact .status { font-size:11px; }
 .ppp.compact .legal { font-size:8px; margin-top:1px; }
 .ppp.compact .badge { font-size:9px; }
+/* Trademark line: own line, smaller, under the "Not affiliated" note. */
+.ppp .legal .tm { display:block; font-size:8px; line-height:1.1; margin-top:1px; }
+.ppp.compact .legal { line-height:1.1; }
+.ppp.compact .legal .tm { font-size:7px; margin-top:0; }

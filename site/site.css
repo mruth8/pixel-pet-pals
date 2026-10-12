@@ -16,14 +16,14 @@ h3 { font-size: 22px; margin: 8px 0 0; }
 .card { background: var(--card); border: 3px solid var(--ink); border-radius: 6px; box-shadow: 4px 4px 0 rgba(43,30,38,.3); }
 .pets { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .pet { padding: 18px; text-align: center; }
-.hero-gif { width:128px; height:128px; margin: 0 auto; border: 2px solid var(--ink); border-radius: 4px; }
+.hero-gif { width:128px; height:auto; margin: 0 auto; border: 2px solid var(--ink); border-radius: 4px; }
 .anims { display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 figure { margin: 0; }
-.anims img { width: 64px; height: 64px; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; }
+.anims img { width: 64px; height: auto; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; }
 figcaption { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
 .colours { display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .colours .card { padding: 14px; }
-.colours img { width: 128px; height: 128px; margin: 0 auto; }
+.colours img { width: 128px; height: auto; margin: 0 auto; image-rendering: pixelated; }
 .colours figcaption { font-size: 17px; color: var(--ink); }
 .widgets { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; align-items: end; }
 .widgets img { width: 378px; max-width: 100%; } .widgets img.compact { width: 258px; }
@@ -40,7 +40,7 @@ footer.foot { padding: 40px 24px 48px; color: var(--muted); font-size: 14px; }
   h1 { font-size: 40px; } .lede { font-size: 17px; }
   .pets { grid-template-columns: 1fr; }
   .colours { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .colours img { width: 112px; height: 112px; }
+  .colours img { width: 112px; height: auto; }
   .widgets { grid-template-columns: 1fr; }
   .wrap { padding-left: 16px; padding-right: 16px; }
 }
