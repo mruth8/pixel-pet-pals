@@ -1,6 +1,6 @@
 // Smoke test: starts relay, subscribes to SSE, runs mock sender once, checks events arrive & invalid ones rejected.
 const { spawn } = require("child_process"), http = require("http"), path = require("path");
-const PORT = 18787, root = path.join(__dirname, "..");
+const PORT = +process.env.SMOKE_PORT || 18787, root = path.join(__dirname, "..");
 const relay = spawn("node", ["relay/server.js"], { cwd: root, env: { ...process.env, PORT } });
 const fail = m => { console.error("FAIL", m); relay.kill(); process.exit(1); };
 setTimeout(async () => {

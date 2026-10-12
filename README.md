@@ -5,7 +5,7 @@ Free, non-commercial. **Not affiliated with Jagex.** No Jagex assets; all art or
 Milestone 1: event format v1, mock sender, placeholder widget with one pet (from a swappable pack).
 
 ```
-node relay/server.js                 # reference relay + widget on http://localhost:8787
+node relay/server.js                 # reference relay + widget on http://127.0.0.1:8787 (loopback only)
 node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once)
 open http://localhost:8787/widget/   # widget; ?pet=olmlet|baby-mole|baby-chinchompa &variant=red &size=compact &player= &stream= &packs=
 npm test                             # pack + relay smoke tests
@@ -22,5 +22,8 @@ Layout: `docs/event-format-v1.md`, `schema/` (JSON Schema + TS types), `shared/v
 - **"Not affiliated with Jagex"** shown in the widget, README, and to go on plugin/site.
 - **Pets are packs**: `packs/<id>/manifest.json` (`pixel-pet-pals/pack@1`), optional `facing` and `variants`. Swap via `?pet=` / `?variant=`; no code changes.
 
+## Relay network exposure
+The relay binds to **127.0.0.1 only** by default, so it's unreachable from your LAN. To expose it (e.g. OBS on another PC, or a server), opt in with `PET_HOST=0.0.0.0 node relay/server.js` (or `--host 0.0.0.0`) and set `PET_SECRET` so only your plugin can post events. Note: `/state` and `/stream` stay readable without the secret.
+
 ## Progress page
-`site/` is a self-contained static page (relative paths only) for mrruth.com/matthew/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
+`site/` is a self-contained static page (relative paths only, resolved via `<base href="/matthew/pixel-pet-pals/">` so the URL works with or without a trailing slash; change that one line to host elsewhere) for mrruth.com/matthew/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
