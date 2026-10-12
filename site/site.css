@@ -46,3 +46,6 @@ footer.foot { padding: 40px 24px 48px; color: var(--muted); font-size: 14px; }
 }
 /* Live widget demos (iframes into widget/), replacing the static renders. */
 iframe.live { border:0; background:transparent; display:block; max-width:100%; }
+.widgets figure { min-width:0; max-width:100%; }
+.live-box { position:relative; max-width:100%; overflow:hidden; }
+.live-box iframe.live { position:absolute; left:0; top:0; transform-origin:0 0; max-width:none; }
