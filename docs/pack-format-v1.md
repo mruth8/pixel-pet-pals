@@ -18,7 +18,7 @@ Common: `activityMap` (activity.category -> animation), `eventMap` (event type -
 
 Shipped (12 pets + dev placeholder):
 - **v0.3.0:** `baby-mole` (left); `baby-chinchompa` (right; grey default, red, black, gold).
-- **v0.4.0:** `olmlet` (left, 32x40), `heron`, `rocky`, `phoenix`, `beef`, `lilviathan` (left), `youngllef` (left; corrupted default, crystal), `lil-zik`, `abyssal-orphan` (front), `butch` (front, 32x40).
+- **v0.4.0:** `olmlet` (left, 32x40; in the compact card, 32x40 pets get an extra crisp CSS scale of 1.6x to fill the 64px stage), `heron`, `rocky`, `phoenix`, `beef`, `lilviathan` (left), `youngllef` (left; corrupted default, crystal), `lil-zik`, `abyssal-orphan` (front), `butch` (front, 32x40).
 - `placeholder-blob` (dev).
 
 `packs/packs.js` is the designer's file:// mockup bundle (all manifests inlined); the widget and relay don't use it.

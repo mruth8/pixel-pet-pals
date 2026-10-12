@@ -9,8 +9,10 @@ body.bg { background:#f6ecdc; }
   box-shadow:4px 4px 0 rgba(43,30,38,.35); overflow:hidden; }
 .ppp .stage { position:relative; flex:0 0 100px; height:100px; background:linear-gradient(#e8f4ec 0 70%, #cfe6d6 70%);
   border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
-.ppp .pet { position:absolute; left:50%; bottom:0; image-rendering:pixelated; background-repeat:no-repeat; transform:translateX(-50%); }
-.ppp .pet.flip { transform:translateX(-50%) scaleX(-1); }
+/* --s: extra crisp (nearest-neighbour) upscale, 1 by default; used for tall pets in the compact card. Scales from the feet. */
+.ppp .pet { --s:1; position:absolute; left:50%; bottom:0; image-rendering:pixelated; background-repeat:no-repeat;
+  transform-origin:50% 100%; transform:translateX(-50%) scale(var(--s)); }
+.ppp .pet.flip { transform:translateX(-50%) scale(calc(-1 * var(--s)), var(--s)); }
 /* No CSS hop on party: the celebrate frames already hop, and an extra 8px pushed full-height pets out of the stage. */
 .ppp .info { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; z-index:1; }
 .ppp .name { font-size:20px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -23,12 +25,15 @@ body.bg { background:#f6ecdc; }
 .ppp .badge { position:absolute; right:8px; top:6px; font-size:11px; background:var(--rose); color:#fff;
   border:2px solid var(--ink); padding:0 5px; display:none; z-index:2; }
 .ppp.party .badge { display:block; }
-/* Compact 240x80. Fix: status wraps (no nowrap/overflow clip), so "Logged out · sleeping · 2h" shows in full. */
+/* Compact 240x80: status is ONE line. The activity text ellipsizes and "· 2h" never shrinks, so the footer (with the trademark line)
+   always fits. "Logged out · sleeping · 2h" fits in full (asserted by test/browser-check.js). */
 .ppp.compact { width:240px; height:80px; gap:8px; padding:5px 6px 5px 5px; }
 .ppp.compact .stage { flex-basis:68px; height:68px; }
 .ppp.compact .info { gap:1px; }
 .ppp.compact .name { font-size:14px; }
-.ppp.compact .status { font-size:11px; }
+.ppp.compact .status { font-size:11px; flex-wrap:nowrap; white-space:nowrap; min-width:0; }
+.ppp.compact .status .text { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.ppp.compact .status .since { flex:0 0 auto; }
 .ppp.compact .legal { font-size:8px; margin-top:1px; }
 .ppp.compact .badge { font-size:9px; }
 /* Trademark line: own line, smaller, under the "Not affiliated" note. */

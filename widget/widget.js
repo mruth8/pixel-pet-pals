@@ -13,6 +13,8 @@
   // Stage interiors: overlay 96x96 (3px/src px for 32x32), compact 64x64 (2px). Tall packs drop one integer step.
   const K = PPPPack.fitScale(m, compact ? 2 : 3, compact ? 64 : 96, compact ? 64 : 96);
   card.classList.toggle("tall", fh > fw);
+  // Compact + tall (e.g. 32x40 at 1x = 40px): crisp CSS upscale to fill the 64px stage (1.6x), so it matches the other pets.
+  if (compact && K < 2) el.style.setProperty("--s", String(Math.min(64 / (fw * K), 64 / (fh * K), 2 / K)));
   Object.assign(el.style, { width: fw * K + "px", height: fh * K + "px",
     backgroundImage: `url(${PACKS}/${PET}/${file})`, backgroundSize: `${m.sheet.columns * fw * K}px ${m.sheet.rows * fh * K}px` });
   el.classList.toggle("flip", PPPPack.needsFlip(m));
