@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pixelpetpals.local/schema/event-v1.schema.json",
+  "title": "Pixel Pet Pals event v1",
+  "type": "object",
+  "required": ["v", "player", "ts", "type"],
+  "additionalProperties": false,
+  "properties": {
+    "v": { "const": 1, "description": "Format version. Breaking changes bump this." },
+    "player": { "type": "string", "minLength": 1, "maxLength": 64, "description": "RSN or alias" },
+    "ts": { "type": "string", "format": "date-time" },
+    "type": { "enum": ["activity", "level_up", "loot", "death", "pet_drop", "quest", "login", "logout", "idle", "heartbeat"] },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category"],
+      "properties": {
+        "category": { "enum": ["skilling", "combat", "bossing", "banking", "traveling", "minigame", "idle"] },
+        "skill": { "type": "string" },
+        "target": { "type": "string" },
+        "region": { "type": "string", "description": "Optional; plugin may hide it" }
+      }
+    },
+    "detail": { "type": "object", "description": "Type-specific extras, e.g. level_up {skill, level}, loot {item, value, rare}" }
+  }
+}

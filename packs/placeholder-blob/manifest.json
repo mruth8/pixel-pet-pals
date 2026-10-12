@@ -1,0 +1,25 @@
+{
+  "packVersion": 1,
+  "id": "placeholder",
+  "name": "Placeholder pack (dev only, not final art)",
+  "pets": [{
+    "id": "blob",
+    "name": "Blob",
+    "spriteSheet": "blob.svg",
+    "frameSize": { "w": 32, "h": 32 },
+    "sheetSize": { "w": 64, "h": 224 },
+    "animations": {
+      "idle": { "row": 0, "frames": 2, "fps": 2 },
+      "walk": { "row": 1, "frames": 2, "fps": 6 },
+      "sleep": { "row": 2, "frames": 2, "fps": 1 },
+      "happy": { "row": 3, "frames": 2, "fps": 6 },
+      "celebrate": { "row": 4, "frames": 2, "fps": 8 },
+      "skilling": { "row": 5, "frames": 2, "fps": 4 },
+      "combat": { "row": 6, "frames": 2, "fps": 6 },
+      "bossing": { "row": 6, "frames": 2, "fps": 8 },
+      "banking": { "row": 0, "frames": 2, "fps": 2 },
+      "traveling": { "row": 1, "frames": 2, "fps": 6 },
+      "minigame": { "row": 3, "frames": 2, "fps": 4 }
+    }
+  }]
+}
