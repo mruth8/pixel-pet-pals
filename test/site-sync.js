@@ -12,12 +12,31 @@ const extra = [];
 const packIds = fs.readdirSync(path.join(R, "packs")).filter(d => d !== "placeholder-blob" && !d.startsWith("zz-test-") && fs.existsSync(path.join(R, "packs", d, "manifest.json")));
 for (const p of packIds) for (const f of walk(path.join(R, "packs", p))) { const r = rel(R, f); if (EXCLUDE.test(r)) { if (fs.existsSync(path.join(R, "site", r))) extra.push("site/" + r); } else pairs.push([r, "site/" + r]); }
 for (const f of walk(path.join(R, "site", "packs"))) { const r = rel(path.join(R, "site"), f); if (!fs.existsSync(path.join(R, r)) || EXCLUDE.test(r)) extra.push("site/" + r); }
+// First differing key path between two JSON values, or null.
+function jsonDiff(want, got, at = "") {
+  if (want === got) return null;
+  const tw = Array.isArray(want) ? "array" : typeof want, tg = Array.isArray(got) ? "array" : typeof got;
+  if (tw !== tg || tw !== "object" && tw !== "array" || want === null || got === null) return { at: at || "(root)", want, got };
+  const keys = tw === "array" ? [...Array(Math.max(want.length, got.length)).keys()] : [...new Set([...Object.keys(want), ...Object.keys(got)])];
+  for (const k of keys) { const d = jsonDiff(want[k], got[k], tw === "array" ? `${at}[${k}]` : at ? `${at}.${k}` : k); if (d) return d; }
+  return null;
+}
+const fmt = v => v === undefined ? "(missing)" : JSON.stringify(v);
+// Returns null when the site manifest matches the source minus stripped refs, else a message naming file, key path, expected and actual.
+function manifestDrift(srcFile, siteFile, siteRel = siteFile) {
+  const want = REFS.strip(path.dirname(siteFile), JSON.parse(fs.readFileSync(srcFile))).manifest, got = JSON.parse(fs.readFileSync(siteFile));
+  const d = jsonDiff(want, got);
+  return d && `${siteRel}: ${d.at} expected ${fmt(d.want)} but got ${fmt(d.got)}`;
+}
+module.exports = { jsonDiff, manifestDrift };
+const drift = [];
 const same = (a, b) => {
   if (!fs.existsSync(path.join(R, b))) return false;
   if (!b.endsWith("/manifest.json")) return fs.readFileSync(path.join(R, a)).equals(fs.readFileSync(path.join(R, b)));
-  const want = REFS.strip(path.dirname(path.join(R, b)), JSON.parse(fs.readFileSync(path.join(R, a)))).manifest;
-  return JSON.stringify(want) === JSON.stringify(JSON.parse(fs.readFileSync(path.join(R, b))));
+  const m = manifestDrift(path.join(R, a), path.join(R, b), b); if (m) drift.push(m);
+  return !m;
 };
+if (require.main !== module) return;
 const bad = pairs.filter(([a, b]) => !same(a, b));
 let nRefs = 0;
 for (const p of fs.readdirSync(path.join(R, "site", "packs"))) { const d = path.join(R, "site", "packs", p), f = path.join(d, "manifest.json"); if (!fs.existsSync(f)) continue;
@@ -26,5 +45,5 @@ for (const p of fs.readdirSync(path.join(R, "site", "packs"))) { const d = path.
 const html = ["site/index.html", "site/widget.html", "site/site.css"].map(f => fs.readFileSync(path.join(R, f), "utf8")).join("\n");
 if (/activities\/(gifs|preview|activities\.json)/.test(html)) extra.push("the page references excluded activity files: update EXCLUDE and scripts/sync-site.sh");
 const up = html.match(/(?:src|href|url\()=?["(]?\.\.\//g);
-if (bad.length || up || extra.length) { console.error("FAIL site out of sync:", bad.map(x => x[1]).slice(0, 10), up || "", [...new Set(extra)].slice(0, 10)); process.exit(1); }
+if (bad.length || up || extra.length) { console.error("FAIL site out of sync:", ...drift.map(d => "\n  drift " + d), "\n ", bad.map(x => x[1]).slice(0, 10), up || "", [...new Set(extra)].slice(0, 10)); process.exit(1); }
 console.log(`PASS: site copies in sync (${pairs.length} files), no ../ paths, no unused activity gifs/previews/json, all ${nRefs} manifest file refs resolve`);
