@@ -27,3 +27,7 @@ The relay binds to **127.0.0.1 only** by default, so it's unreachable from your 
 
 ## Progress page
 `site/` is a self-contained static page (relative paths only, resolved via `<base href="/matthew/pixel-pet-pals/">` so the URL works with or without a trailing slash; change that one line to host elsewhere) for mrruth.com/matthew/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
+
+### Tests & site sync
+- `scripts/sync-site.sh` re-copies widget/shared/packs into `site/` (activity GIFs, previews and activities.json are excluded; `test/site-sync.js` enforces this).
+- Test ports come from env, else a free port: `BROWSER_PORT`, `SITE_PORT`, `SMOKE_PORT`, `UNIT_PORT`, `CHROME_DEBUG_PORT`. Tests always kill the Chrome they start (exit/signal handlers in `test/harness.js`).

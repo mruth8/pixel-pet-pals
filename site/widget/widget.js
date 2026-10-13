@@ -23,11 +23,19 @@
   const acts = PPPPack.resolveActivities(m, variant), actGrid = acts && PPPPack.activitiesGrid(acts);
   const baseSheet = { img: `url(${PACKS}/${PET}/${file})`, size: `${m.sheet.columns * fw * K}px ${m.sheet.rows * fh * K}px` };
   const actSheet = acts && { img: `url(${PACKS}/${PET}/${acts.sheet})`, size: `${actGrid.columns * fw * K}px ${actGrid.rows * fh * K}px` };
-  if (acts) new Image().src = `${PACKS}/${PET}/${acts.sheet}`;  // preload
+  // Preload the activities sheet. If it fails (404, broken custom pack), activities are disabled and we fall back to
+  // activityMap -> base animations, re-playing the current activity so the stage is never blank.
+  let actsOk = null, lastActivity = null;
+  if (acts) { const pre = new Image();
+    pre.onload = () => { actsOk = true; };
+    pre.onerror = () => { actsOk = false; el.dataset.actsError = "1"; console.warn("activities sheet failed to load, falling back:", acts.sheet);
+      if (el.dataset.sheet === "activities") playActivity(lastActivity); };
+    pre.src = `${PACKS}/${PET}/${acts.sheet}`; }
   function useSheet(sh, kind) { if (el.dataset.sheet !== kind) { el.style.backgroundImage = sh.img; el.style.backgroundSize = sh.size; el.dataset.sheet = kind; } }
   // Activity animation from the activities sheet (fallback handled by PPPPack.pickActivity).
   function playActivity(activity) {
-    const pick = PPPPack.pickActivity(m, acts, activity);
+    lastActivity = activity;
+    const pick = PPPPack.pickActivity(m, actsOk === false ? null : acts, activity);
     if (pick.source !== "activities") return play(pick.key);
     useSheet(actSheet, "activities"); runFrames(pick.anim, "act:" + pick.key);
   }

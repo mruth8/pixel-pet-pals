@@ -2,21 +2,22 @@
 // Every pack (and variant) in overlay + compact, at 1100px and 390px, via /widget/ and /widget (no slash).
 // Asserts facing, variant, no sprite cropping, status/legal text fully visible. Screenshots -> screenshots/v5-*.png
 const { spawn } = require("child_process"), fs = require("fs"), path = require("path");
-const ROOT = path.join(__dirname, ".."), OUT = path.join(ROOT, "screenshots"), PORT = +process.env.BROWSER_PORT || 18899, BASE = `http://127.0.0.1:${PORT}`;
+const H = require("./harness");
+const ROOT = path.join(__dirname, ".."), OUT = path.join(ROOT, "screenshots"); let PORT, BASE;  // PORT from BROWSER_PORT or a free port
 fs.mkdirSync(OUT, { recursive: true });
-const PACKS = fs.readdirSync(path.join(ROOT, "packs")).filter(d => fs.existsSync(path.join(ROOT, "packs", d, "manifest.json")) && d !== "placeholder-blob");
-const relay = spawn("node", ["relay/server.js"], { cwd: ROOT, env: { ...process.env, PORT, PET_HOST: "127.0.0.1" } });
-const ch = spawn("google-chrome", ["--headless=new", "--no-sandbox", "--remote-debugging-port=19222", "--window-size=1100,900", "about:blank"]);
+const PACKS = fs.readdirSync(path.join(ROOT, "packs")).filter(d => fs.existsSync(path.join(ROOT, "packs", d, "manifest.json")) && d !== "placeholder-blob" && !d.startsWith("zz-test-"));
 const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0, n = 0; const fail = m => { bad++; console.log("FAIL", m); };
 const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringify({ v: 1, player: "Matthew", ts: new Date().toISOString(), ...ev }) });
 (async () => {
-  await sl(2500);
-  const t = (await (await fetch("http://127.0.0.1:19222/json")).json()).find(x => x.type === "page");
-  const ws = new WebSocket(t.webSocketDebuggerUrl); await new Promise(r => ws.onopen = r);
+  PORT = await H.port("BROWSER_PORT"); BASE = `http://127.0.0.1:${PORT}`;
+  H.child("node", ["relay/server.js"], { cwd: ROOT, env: { ...process.env, PORT, PET_HOST: "127.0.0.1" } });
+  const chrome = await H.launchChrome({ envPort: "CHROME_DEBUG_PORT" });
+  for (let i = 0; i < 50; i++) { try { await fetch(`${BASE}/state`); break; } catch { await sl(100); } }
+  const ws = new WebSocket(chrome.wsUrl); H.onCleanup(() => ws.close()); await new Promise(r => ws.onopen = r);
   let id = 0; const pend = {};
   ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend[d.id]) pend[d.id](d.result);
     if (d.method === "Runtime.exceptionThrown") fail("exception " + d.params.exceptionDetails.text);
-    if (d.method === "Network.responseReceived" && d.params.response.status >= 400) fail(d.params.response.status + " " + d.params.response.url); };
+    if (d.method === "Network.responseReceived" && d.params.response.status >= 400 && !d.params.response.url.endsWith("/zz-test-broken-acts/activities/missing.png")) fail(d.params.response.status + " " + d.params.response.url); };
   const call = (method, params = {}) => new Promise((r, j) => { const i = ++id; const to = setTimeout(() => j(new Error("CDP timeout " + method)), 20000); pend[i] = v => { clearTimeout(to); r(v); }; ws.send(JSON.stringify({ id: i, method, params })); });
   const ev = async x => (await call("Runtime.evaluate", { expression: x, returnByValue: true, awaitPromise: true })).result.value;
   await call("Runtime.enable"); await call("Network.enable"); await call("Network.setCacheDisabled", { cacheDisabled: true });
@@ -35,6 +36,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       const p=$("pet"),c=$("w"),R=e=>e.getBoundingClientRect(),cr=R(c),pr=R(p),sr=R(c.querySelector(".stage")),st=$("statusline"),lg=$("note");
       return {pet:p.dataset.pet,variant:p.dataset.variant,flip:p.classList.contains("flip"),tall:c.classList.contains("tall"),petH:pr.height,
         inStage:pr.left>=sr.left-0.5&&pr.right<=sr.right+0.5&&pr.top>=sr.top-0.5&&pr.bottom<=sr.bottom+0.5,
+        topGap:(()=>{const st=c.querySelector(".stage");return pr.top-(sr.top+st.clientTop)})(),
         textOk:![st,lg].some(e=>R(e).right>cr.right-2||R(e).bottom>cr.bottom-2)&&![...st.children].some(e=>e.scrollWidth>e.clientWidth+1),
         tm:/Old School RuneScape is a trademark of Jagex Ltd\\./.test(lg.textContent)&&/Not affiliated with Jagex/.test(lg.textContent),
         url:location.pathname,w:cr.width,h:cr.height}})()`);
@@ -42,6 +44,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
     const want = { pet: c.id, variant: c.v || c.def || "", flip: c.facing === "left" };
     for (const k in want) if (s[k] !== want[k]) fail(`${tag} ${c.id}/${c.v} ${k}=${s[k]} want ${want[k]}`);
     if (!s.inStage) fail(`${tag} ${c.id} sprite cropped/outside stage`);
+    if (!(s.topGap >= 1)) fail(`${tag} ${c.id} art touches the top edge (gap ${s.topGap})`);
     if (!s.textOk) fail(`${tag} ${c.id} text clipped`);
     if (!s.tm) fail(`${tag} ${c.id} legal notes missing`);
     if (shotName) { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: Math.ceil(s.w) + 14, height: Math.ceil(s.h) + 14, scale: 2 } });
@@ -85,13 +88,38 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
         if (!s.img.endsWith(`/packs/${c.id}/${acts.sheet}`)) fail(`${tag} wrong sheet ${s.img} want ${acts.sheet}`);
       } else if (s.anim !== want.key || s.sheet !== "base") fail(`${tag} fallback ${s.anim}/${s.sheet} want ${want.key}/base`);
       if (!s.loaded) fail(`${tag} sheet not loaded`);
-      if (s.gapL < 1 || s.gapR < 1 || s.top < -0.5 || s.bottom < -0.5) fail(`${tag} edge clipping L${s.gapL} R${s.gapR} T${s.top} B${s.bottom}`);
+      if (s.gapL < 1 || s.gapR < 1 || s.top < 1 || s.bottom < -0.5) fail(`${tag} edge clipping L${s.gapL} R${s.gapR} T${s.top} B${s.bottom}`);
       if (s.flip !== (c.facing === "left")) fail(`${tag} facing`);
       if (!s.legalIn) fail(`${tag} legal clipped`);
       if (!size || act === "fishing") { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: Math.ceil(s.w) + 14, height: Math.ceil(s.h) + 14, scale: 2 } });
         fs.writeFileSync(path.join(OUT, `v5-act-${act}-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png`), Buffer.from(r.data, "base64")); }
     }
     console.log(`activities ${act}: ${cases.length * 2} renders ${bad === beforeAct ? "ok" : "FAILED"}`);
+  }
+  // L2: broken custom pack whose activities sheet 404s -> falls back to activityMap/base, never a blank stage.
+  {
+    const src = path.join(ROOT, "packs", "heron"), dst = path.join(ROOT, "packs", "zz-test-broken-acts");
+    fs.rmSync(dst, { recursive: true, force: true }); fs.mkdirSync(dst);
+    H.onCleanup(() => fs.rmSync(dst, { recursive: true, force: true }));
+    const m = JSON.parse(fs.readFileSync(path.join(src, "manifest.json")));
+    fs.copyFileSync(path.join(src, m.sheet.file), path.join(dst, "sheet.png"));
+    Object.assign(m, { id: "zz-test-broken-acts", sheet: { ...m.sheet, file: "sheet.png" }, activities: { ...m.activities, sheet: "activities/missing.png" } });
+    fs.writeFileSync(path.join(dst, "manifest.json"), JSON.stringify(m));
+    await call("Emulation.setDeviceMetricsOverride", { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false });
+    for (const act of ["woodcutting", "combat", "banking"]) {
+      await mock(act);
+      const url = `${BASE}/widget/?bg=1&pet=zz-test-broken-acts`;
+      await call("Page.navigate", { url });
+      let r; for (let i = 0; i < 60; i++) { await sl(100); r = await ev(`(()=>{const p=document.getElementById("pet");return {anim:p.dataset.anim,sheet:p.dataset.sheet,err:p.dataset.actsError,img:p.style.backgroundImage}})()`); if (r.err) break; }
+      await sl(200); r = await ev(`(async()=>{const p=document.getElementById("pet"),u=getComputedStyle(p).backgroundImage.slice(5,-2),im=new Image();im.src=u;await im.decode().catch(()=>{});
+        return {anim:p.dataset.anim,sheet:p.dataset.sheet,err:p.dataset.actsError,loaded:im.naturalWidth>0,img:u.replace(location.origin,"")}})()`);
+      const want = m.activityMap[act === "woodcutting" ? "skilling" : act] || m.default;
+      n++;
+      if (r.err !== "1" || r.sheet !== "base" || r.anim !== want || !r.loaded || !r.img.endsWith("/zz-test-broken-acts/sheet.png")) fail(`broken pack ${act}: ${JSON.stringify(r)} want base/${want}`);
+      const shot = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 380, height: 140, scale: 2 } });
+      fs.writeFileSync(path.join(OUT, `v5-broken-acts-${act}.png`), Buffer.from(shot.data, "base64"));
+    }
+    console.log(`broken activities sheet: fallback checked (expected 404 on missing.png ignored)`);
   }
   // Celebrate (level_up): sprite must stay inside the stage, incl. tall pets.
   await call("Emulation.setDeviceMetricsOverride", { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false });
@@ -114,12 +142,14 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       const q = await ev(`(()=>{const $=i=>document.getElementById(i),R=e=>e.getBoundingClientRect(),c=R($("w")),st=$("statusline"),t=st.querySelector(".text"),lg=$("note"),p=R($("pet")),sg=R(document.querySelector(".stage"));
         return {text:st.textContent.replace(/\\s+/g," ").trim(),oneLine:R(st).height<=parseFloat(getComputedStyle(st).fontSize)*1.6,ellipsized:t.scrollWidth>t.clientWidth+1,
           sinceVisible:R($("since")).right<=c.right-2,legalIn:R(lg).bottom<=c.bottom-3&&R(lg).right<=c.right-2,petH:p.height,petW:p.width,
-          inStage:p.top>=sg.top-0.5&&p.bottom<=sg.bottom+0.5&&p.left>=sg.left-0.5&&p.right<=sg.right+0.5,s:getComputedStyle($("pet")).getPropertyValue("--s").trim()||"1"}})()`);
+          inStage:p.top>=sg.top-0.5&&p.bottom<=sg.bottom+0.5&&p.left>=sg.left-0.5&&p.right<=sg.right+0.5,topGap:p.top-(sg.top+document.querySelector(".stage").clientTop),stageInCard:sg.top>=c.top+3&&sg.bottom<=c.bottom-3,s:getComputedStyle($("pet")).getPropertyValue("--s").trim()||"1"}})()`);
       const tag = `compact-qc ${label} ${pid}`; n++;
       if (!q.oneLine) fail(`${tag} status not one line`);
       if (!q.legalIn) fail(`${tag} trademark/legal line clipped`);
       if (!q.sinceVisible) fail(`${tag} time not visible`);
       if (!q.inStage) fail(`${tag} pet cropped`);
+      if (!(q.topGap >= 1)) fail(`${tag} art touches top edge (gap ${q.topGap})`);
+      if (!q.stageInCard) fail(`${tag} stage outside card border`);
       if (label === "logout" && (q.ellipsized || !/Logged out · sleeping ?· 2h/.test(q.text))) fail(`${tag} logout text truncated: ${q.text}`);
       if (label === "muspah" && !q.ellipsized) console.log(`  note: ${tag} fits without ellipsis`);
       if (["olmlet", "butch"].includes(pid) && (Math.abs(q.petH - 64) > 1 || Math.abs(+q.s - 1.6) > 0.01)) fail(`${tag} tall pet not ~1.6x: h=${q.petH} s=${q.s}`);
@@ -136,5 +166,5 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
   if (!/Logged out · sleeping ?· 2h/.test(lo)) fail("compact logout text: " + lo);
   const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 260, height: 100, scale: 2 } });
   fs.writeFileSync(path.join(OUT, "v5-widget-compact-logged-out-olmlet.png"), Buffer.from(r.data, "base64"));
-  ch.kill(); relay.kill(); console.log(bad ? `FAIL (${bad})` : `PASS: browser check (${n} widget renders, ${cases.length} pet/variant cases)`); process.exit(bad ? 1 : 0);
-})();
+  H.cleanup(); console.log(bad ? `FAIL (${bad})` : `PASS: browser check (${n} widget renders, ${cases.length} pet/variant cases)`); process.exit(bad ? 1 : 0);
+})().catch(e => { console.error("FAIL", e.stack || e); H.cleanup(); process.exit(1); });

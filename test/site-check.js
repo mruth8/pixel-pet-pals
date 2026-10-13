@@ -3,8 +3,9 @@
 // Runs at 1100px and 390px, with and without the trailing slash (server has no DirectorySlash redirect).
 // node --experimental-websocket test/site-check.js
 const http = require("http"), fs = require("fs"), path = require("path"), { spawn } = require("child_process");
-const SITE = path.join(__dirname, "..", "site"), PREFIX = "/matthew/pixel-pet-pals/", PORT = 18901, OUT = path.join(__dirname, "..", "screenshots");
+const SITE = path.join(__dirname, "..", "site"), PREFIX = "/matthew/pixel-pet-pals/", OUT = path.join(__dirname, "..", "screenshots");
 const MIME = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".png": "image/png", ".gif": "image/gif", ".svg": "image/svg+xml", ".ttf": "font/ttf" };
+const H = require("./harness"); let PORT;  // SITE_PORT or a free port
 const misses = [];
 const srv = http.createServer((req, res) => {
   let u = decodeURIComponent(new URL(req.url, "http://x").pathname);
@@ -13,13 +14,12 @@ const srv = http.createServer((req, res) => {
   let f = path.normalize(path.join(SITE, u.slice(PREFIX.length))); if (f.endsWith(path.sep) || f === SITE) f = path.join(f, "index.html");
   if (!f.startsWith(SITE)) { misses.push(u); res.writeHead(404); return res.end(); }
   fs.readFile(f, (e, d) => { if (e) { misses.push(u); res.writeHead(404); return res.end(); } res.writeHead(200, { "content-type": MIME[path.extname(f)] || "application/octet-stream" }); res.end(d); });
-}).listen(PORT);
-const ch = spawn("google-chrome", ["--headless=new", "--no-sandbox", "--remote-debugging-port=19223", "--window-size=1100,900", "about:blank"]);
+});
 const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = m => { bad++; console.log("FAIL", m); };
 (async () => {
-  await sl(2500);
-  const t = (await (await fetch("http://localhost:19223/json")).json()).find(x => x.type === "page");
-  const ws = new WebSocket(t.webSocketDebuggerUrl); await new Promise(r => ws.onopen = r);
+  PORT = await H.port("SITE_PORT"); await new Promise(r => srv.listen(PORT, "127.0.0.1", r)); H.onCleanup(() => srv.close());
+  const chrome = await H.launchChrome({ envPort: "CHROME_DEBUG_PORT" });
+  const ws = new WebSocket(chrome.wsUrl); H.onCleanup(() => ws.close()); await new Promise(r => ws.onopen = r);
   let id = 0; const pend = {};
   ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend[d.id]) pend[d.id](d.result);
     if (d.method === "Network.responseReceived" && d.params.response.status >= 400) fail(d.params.response.status + " " + d.params.response.url);
@@ -29,7 +29,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
   for (const [vw, slash] of [[1100, true], [1100, false], [390, true], [390, false]]) {
     const tag = `${vw}px ${slash ? "slash" : "no-slash"}`; console.log("--", tag); misses.length = 0;
     await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
-    await call("Page.navigate", { url: `http://localhost:${PORT}${slash ? PREFIX : PREFIX.slice(0, -1)}` }); await sl(1500);
+    await call("Page.navigate", { url: `http://127.0.0.1:${PORT}${slash ? PREFIX : PREFIX.slice(0, -1)}` }); await sl(1500);
     // loading="lazy" iframes only load near the viewport: scroll each into view and wait for its widget.
     await call("Runtime.evaluate", { awaitPromise: true, expression: `(async()=>{for(const f of document.querySelectorAll("iframe.live")){f.scrollIntoView();
       for(let i=0;i<60&&!(f.contentDocument&&f.contentDocument.getElementById("pet")&&f.contentDocument.getElementById("pet").style.backgroundImage&&f.contentDocument.getElementById("player").textContent!=="…");i++)await new Promise(r=>setTimeout(r,100));}
@@ -70,5 +70,5 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
     const name = `v5-site-${vw}${slash ? "" : "-noslash"}.png`;
     fs.writeFileSync(path.join(OUT, name), Buffer.from(s.data, "base64")); console.log("  screenshot -> screenshots/" + name);
   }
-  ch.kill(); srv.close(); console.log(bad ? `FAIL (${bad})` : "PASS: site check"); process.exit(bad ? 1 : 0);
-})();
+  H.cleanup(); console.log(bad ? `FAIL (${bad})` : "PASS: site check"); process.exit(bad ? 1 : 0);
+})().catch(e => { console.error("FAIL", e.stack || e); H.cleanup(); process.exit(1); });
