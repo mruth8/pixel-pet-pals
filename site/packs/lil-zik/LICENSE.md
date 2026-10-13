@@ -2,6 +2,7 @@
 
 Original pixel art by Matthew Ruth's team for **Pixel Pet Pals**, a free, non-commercial fan project.
 v4 (Oct 12, 2026): new pet, from the approved idle design (Lil' Zik A).
+v5 (Oct 13, 2026): `sot` variant, Lil' Sot (the Sotetseg form), from the approved idle Lil' Sot E (`new-pets-2/draw_options3.py`, animated by `tools/draw_pets_v5.py`). Variant frames differ in shape and face left.
 Drawn from scratch as code (`new-pets/*.py` for the idle design, `tools/draw_pets_v4.py` for the animations):
 polygons, ellipses and hand-placed pixels. The OSRS Wiki follower image was viewed only as a visual reference
 for shape and colour; no game sprites, models or textures were ripped, traced, sampled or downloaded into the art.

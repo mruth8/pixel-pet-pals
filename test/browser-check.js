@@ -1,6 +1,6 @@
 // Headless-Chrome check (google-chrome, Node >=20.10): node --experimental-websocket test/browser-check.js
 // Every pack (and variant) in overlay + compact, at 1100px and 390px, via /widget/ and /widget (no slash).
-// Asserts facing, variant, no sprite cropping, status/legal text fully visible. Screenshots -> screenshots/v5-*.png
+// Asserts facing, variant, no sprite cropping, status/legal text fully visible. Screenshots -> screenshots/v6-*.png
 const { spawn } = require("child_process"), fs = require("fs"), path = require("path");
 const H = require("./harness");
 const ROOT = path.join(__dirname, ".."), OUT = path.join(ROOT, "screenshots"); let PORT, BASE;  // PORT from BROWSER_PORT or a free port
@@ -24,7 +24,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
   const cases = [];
   for (const id of PACKS) {
     const m = JSON.parse(fs.readFileSync(path.join(ROOT, "packs", id, "manifest.json")));
-    const vs = (m.variants || []).map(v => v.id); for (const v of vs.length ? vs : [""]) cases.push({ id, v, facing: m.facing || "right", def: m.defaultVariant || "" });
+    const vs = (m.variants || []).map(v => v.id); for (const v of vs.length ? vs : [""]) cases.push({ id, v, facing: ((m.variants || []).find(x => x.id === (v || m.defaultVariant)) || {}).facing || m.facing || "right", def: m.defaultVariant || "" });
   }
   await post({ type: "activity", activity: { category: "skilling", skill: "Woodcutting", target: "yew logs" } });
   let T0; const check = async (tag, url, c, shotName) => { T0 = Date.now();
@@ -56,7 +56,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
     await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
     for (const c of cases) for (const size of ["", "compact"]) {
       const q = `?bg=1&pet=${c.id}${c.v ? "&variant=" + c.v : ""}${size ? "&size=compact" : ""}`;
-      const shot = vw === 1100 && slash ? `v5-widget-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png` : null;
+      const shot = vw === 1100 && slash ? `v6-widget-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png` : null;
       await check(tag, `${BASE}/widget${slash ? "/" : ""}${q}`, c, shot);
     }
     console.log(`${tag}: ${cases.length * 2} widgets ${bad === before ? "ok" : "FAILED"}`);
@@ -92,7 +92,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       if (s.flip !== (c.facing === "left")) fail(`${tag} facing`);
       if (!s.legalIn) fail(`${tag} legal clipped`);
       if (!size || act === "fishing") { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: Math.ceil(s.w) + 14, height: Math.ceil(s.h) + 14, scale: 2 } });
-        fs.writeFileSync(path.join(OUT, `v5-act-${act}-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png`), Buffer.from(r.data, "base64")); }
+        fs.writeFileSync(path.join(OUT, `v6-act-${act}-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png`), Buffer.from(r.data, "base64")); }
     }
     console.log(`activities ${act}: ${cases.length * 2} renders ${bad === beforeAct ? "ok" : "FAILED"}`);
   }
@@ -117,15 +117,61 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       n++;
       if (r.err !== "1" || r.sheet !== "base" || r.anim !== want || !r.loaded || !r.img.endsWith("/zz-test-broken-acts/sheet.png")) fail(`broken pack ${act}: ${JSON.stringify(r)} want base/${want}`);
       const shot = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 380, height: 140, scale: 2 } });
-      fs.writeFileSync(path.join(OUT, `v5-broken-acts-${act}.png`), Buffer.from(shot.data, "base64"));
+      fs.writeFileSync(path.join(OUT, `v6-broken-acts-${act}.png`), Buffer.from(shot.data, "base64"));
     }
     console.log(`broken activities sheet: fallback checked (expected 404 on missing.png ignored)`);
+  }
+  // v6: batch-2 pets and variants, every base animation and every frame, overlay + compact. The art's opaque bbox per frame
+  // (from the PNG) is placed on the rendered sprite box; it must stay >=1px inside the stage (Lil' Sot's 6px hop included).
+  // Chaos elemental: celebrate squashes instead of hopping (intended): its art top never rises above idle, and it gets shorter.
+  {
+    const { readPng } = require("./png"), { resolveVariant } = require("../shared/pack"); const before = bad; let k = 0;
+    const NEW = ["baron", "callisto-cub", "chaos-elemental", "penance-queen", "soup", "lil-zik"];
+    const bbox = (img, fx, fy, fw, fh) => { let t = fh, b = -1, l = fw, r = -1;
+      for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) if (img.data[((fy + y) * img.width + fx + x) * 4 + 3]) { t = Math.min(t, y); b = Math.max(b, y); l = Math.min(l, x); r = Math.max(r, x); }
+      return { t, b, l, r }; };
+    for (const c of cases.filter(c => NEW.includes(c.id))) {
+      const m = JSON.parse(fs.readFileSync(path.join(ROOT, "packs", c.id, "manifest.json"))), V = resolveVariant(m, c.v || undefined);
+      const img = readPng(path.join(ROOT, "packs", c.id, V.file)), fw = m.sheet.frameWidth, fh = m.sheet.frameHeight;
+      const boxes = {}; for (const a of ["idle", "walk", "sleep", "happy", "celebrate"]) { const A = V.animations[a]; boxes[a] = [...Array(A.frames)].map((_, i) => bbox(img, i * fw, A.row * fh, fw, fh)); }
+      if (c.id === "chaos-elemental") { const it = Math.min(...boxes.idle.map(x => x.t)), ih = Math.max(...boxes.idle.map(x => x.b - x.t));
+        if (boxes.celebrate.some(x => x.t < it)) fail(`chaos-elemental celebrate hops above idle (top ${boxes.celebrate.map(x => x.t)} vs ${it})`);
+        if (!boxes.celebrate.some(x => x.b - x.t < ih)) fail("chaos-elemental celebrate never squashes");
+        if (boxes.celebrate.some(x => x.b !== Math.max(...boxes.idle.map(y => y.b)))) fail("chaos-elemental celebrate leaves the floor"); }
+      if (c.id === "lil-zik" && c.v === "sot") {  // the ground shadow stays on the floor row, so the hop is the gap of empty rows above it
+        const gap = (A, i) => { let b = -1, g = 0; for (let y = fh - 1; y >= 0; y--) { let any = false; for (let x = 0; x < fw; x++) if (img.data[((A.row * fh + y) * img.width + i * fw + x) * 4 + 3]) any = true;
+          if (b < 0) { if (any) b = y; } else if (!any) g++; else break; } return g; };
+        const lift = Math.max(...[...Array(V.animations.celebrate.frames)].map((_, i) => gap(V.animations.celebrate, i)));
+        if (lift < 1) fail(`lil-zik/sot celebrate does not hop (lift ${lift})`); else console.log(`  lil-zik/sot celebrate hop ${lift}px, top row ${Math.min(...boxes.celebrate.map(x => x.t))}`); }
+      for (const [vw, size] of [[1100, ""], [390, "compact"]]) {
+        await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
+        const url = `${BASE}/widget/?bg=1&pet=${c.id}${c.v ? "&variant=" + c.v : ""}${size ? "&size=compact" : ""}`;
+        await call("Page.navigate", { url });
+        for (let i = 0; i < 100; i++) { await sl(50); if (await ev(`location.href===${JSON.stringify(url)}&&document.readyState==="complete"&&!!window.__petPlay&&!!document.getElementById("pet").dataset.anim`)) break; }
+        for (const a of Object.keys(boxes)) {
+          const s = await ev(`(()=>{window.__petPlay(${JSON.stringify(a)});const p=document.getElementById("pet"),st=document.querySelector(".stage"),R=e=>e.getBoundingClientRect(),pr=R(p),sr=R(st);
+            return {anim:p.dataset.anim,sheet:p.dataset.sheet,img:p.style.backgroundImage,flip:p.classList.contains("flip"),l:pr.left,t:pr.top,w:pr.width,h:pr.height,
+              il:sr.left+st.clientLeft,it:sr.top+st.clientTop,ir:sr.left+st.clientLeft+st.clientWidth,ib:sr.top+st.clientTop+st.clientHeight,cw:R(document.getElementById("w")).width,ch:R(document.getElementById("w")).height}})()`);
+          const tag = `v6 ${c.id}${c.v ? "/" + c.v : ""} ${a}${size ? " compact" : ""}`; n++; k++;
+          if (s.anim !== a || s.sheet !== "base" || !s.img.includes(`/packs/${c.id}/${V.file}`)) fail(`${tag} wrong anim/sheet ${s.anim} ${s.img}`);
+          if (s.flip !== (c.facing === "left")) fail(`${tag} facing`);
+          const px = s.h / fh;
+          boxes[a].forEach((b, i) => { if (b.b < 0) return;
+            const top = s.t + b.t * px - s.it, bot = s.ib - (s.t + (b.b + 1) * px), left = s.l + b.l * px - s.il, right = s.ir - (s.l + (b.r + 1) * px);
+            if (top < 1 || bot < -0.5 || left < 1 || right < 1) fail(`${tag} frame ${i} art outside stage T${top} B${bot} L${left} R${right}`); });
+          if (!size && (a === "celebrate" || c.id === "lil-zik") || (size && a === "celebrate")) {
+            await sl(30); const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: Math.ceil(s.cw) + 14, height: Math.ceil(s.ch) + 14, scale: 2 } });
+            fs.writeFileSync(path.join(OUT, `v6-anim-${c.id}${c.v ? "-" + c.v : ""}-${a}${size ? "-compact" : ""}.png`), Buffer.from(r.data, "base64")); }
+        }
+      }
+    }
+    console.log(`v6 new pets: ${k} animation renders (every frame bbox in stage) ${bad === before ? "ok" : "FAILED"}`);
   }
   // Celebrate (level_up): sprite must stay inside the stage, incl. tall pets.
   await call("Emulation.setDeviceMetricsOverride", { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false });
   await post({ type: "level_up", detail: { skill: "Woodcutting", level: 71 } });
-  for (const c of cases.filter(c => ["olmlet", "butch", "heron", "baby-chinchompa"].includes(c.id) && (!c.v || c.v === c.def)))
-    for (const size of ["", "&size=compact"]) await check("celebrate", `${BASE}/widget/?bg=1&pet=${c.id}${size}`, c, `v5-widget-${c.id}-celebrate${size ? "-compact" : ""}.png`);
+  for (const c of cases.filter(c => (["olmlet", "butch", "heron", "baby-chinchompa", "chaos-elemental", "baron"].includes(c.id) && (!c.v || c.v === c.def) || (c.id === "lil-zik" && c.v === "sot"))))
+    for (const size of ["", "&size=compact"]) await check("celebrate", `${BASE}/widget/?bg=1&pet=${c.id}${c.v ? "&variant=" + c.v : ""}${size}`, c, `v6-widget-${c.id}${c.v ? "-" + c.v : ""}-celebrate${size ? "-compact" : ""}.png`);
   // QC (PR #5): compact status is one line; a long status ellipsizes and never pushes the trademark line out;
   // "Logged out · sleeping · 2h" stays in full; tall pets are upscaled ~1.6x crisply and not cropped.
   await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 900, deviceScaleFactor: 1, mobile: true });
@@ -155,7 +201,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       if (["olmlet", "butch"].includes(pid) && (Math.abs(q.petH - 64) > 1 || Math.abs(+q.s - 1.6) > 0.01)) fail(`${tag} tall pet not ~1.6x: h=${q.petH} s=${q.s}`);
       if (process.env.VERBOSE) console.log(tag, JSON.stringify(q));
       if (label !== "loot") { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 260, height: 100, scale: 3 } });
-        fs.writeFileSync(path.join(OUT, `v5-compact-${label}-${pid}@3x.png`), Buffer.from(r.data, "base64")); }
+        fs.writeFileSync(path.join(OUT, `v6-compact-${label}-${pid}@3x.png`), Buffer.from(r.data, "base64")); }
     }
   }
   // Compact logged-out card text in full (tall pet).
@@ -165,6 +211,6 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
   const lo = await ev(`document.getElementById("statusline").textContent.replace(/\\s+/g," ").trim()`);
   if (!/Logged out · sleeping ?· 2h/.test(lo)) fail("compact logout text: " + lo);
   const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 260, height: 100, scale: 2 } });
-  fs.writeFileSync(path.join(OUT, "v5-widget-compact-logged-out-olmlet.png"), Buffer.from(r.data, "base64"));
+  fs.writeFileSync(path.join(OUT, "v6-widget-compact-logged-out-olmlet.png"), Buffer.from(r.data, "base64"));
   H.cleanup(); console.log(bad ? `FAIL (${bad})` : `PASS: browser check (${n} widget renders, ${cases.length} pet/variant cases)`); process.exit(bad ? 1 : 0);
 })().catch(e => { console.error("FAIL", e.stack || e); H.cleanup(); process.exit(1); });

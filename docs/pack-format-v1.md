@@ -11,7 +11,8 @@ Common: `activityMap` (activity.category -> animation), `eventMap` (event type -
 |---|---|---|
 | `facing` | `"left"`, `"right"` or `"front"` (default `right`; `front` added in v0.4.0) | The status text sits to the right of the pet, so left-facing art is mirrored (`scaleX(-1)`) to face the text. Right and front art is never mirrored. |
 | `variants` | `[{id, name, sheet, paletteColors}]`: colourways with identical layout | `?variant=<id>` picks one. Unknown or missing values fall back to `defaultVariant`, then `sheet.file`. |
-| `defaultVariant` | variant id used by default | baby-chinchompa: `grey`, youngllef: `corrupted` |
+| `defaultVariant` | variant id used by default | baby-chinchompa: `grey`, youngllef: `corrupted`, lil-zik: `zik` |
+| `variants[].facing`, `variants[].animations` | optional (v6): a form with its own frames | lil-zik `sot` faces left and lists its own `animations` (same row/frames/fps as the top level, own `frameFiles`). When a variant lists its own `sheet`, `animations`, `activities` or `facing` the widget uses them; anything it omits comes from the top level, so colour-swap variants behave as before. Resolved by `resolveVariant()` in `shared/pack.js`. |
 
 ## Frame size (tall packs)
 `sheet.frameWidth`/`frameHeight` may differ: v0.4.0 has 32x40 packs (`olmlet`, `butch`). The widget picks the largest integer scale that fits its stage (`fitScale`): 32x32 gets 3px per source pixel in the overlay and 2px in compact, and 32x40 gets 2px and 1px. Feet stay on the stage floor and nothing is cropped. Tall cards also get the class `tall`.

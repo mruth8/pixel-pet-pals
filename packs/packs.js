@@ -1213,7 +1213,7 @@ window.PPP_PACKS = {
   "version": "0.5.0",
   "license": "LICENSE.md",
   "sheet": {
-   "file": "sheet.png",
+   "file": "variants/zik/sheet.png",
    "frameWidth": 32,
    "frameHeight": 32,
    "columns": 8,
@@ -1241,10 +1241,10 @@ window.PPP_PACKS = {
     "fps": 4,
     "loop": true,
     "frameFiles": [
-     "frames/idle_00.png",
-     "frames/idle_01.png",
-     "frames/idle_02.png",
-     "frames/idle_03.png"
+     "variants/zik/frames/idle_00.png",
+     "variants/zik/frames/idle_01.png",
+     "variants/zik/frames/idle_02.png",
+     "variants/zik/frames/idle_03.png"
     ]
    },
    "walk": {
@@ -1253,12 +1253,12 @@ window.PPP_PACKS = {
     "fps": 8,
     "loop": true,
     "frameFiles": [
-     "frames/walk_00.png",
-     "frames/walk_01.png",
-     "frames/walk_02.png",
-     "frames/walk_03.png",
-     "frames/walk_04.png",
-     "frames/walk_05.png"
+     "variants/zik/frames/walk_00.png",
+     "variants/zik/frames/walk_01.png",
+     "variants/zik/frames/walk_02.png",
+     "variants/zik/frames/walk_03.png",
+     "variants/zik/frames/walk_04.png",
+     "variants/zik/frames/walk_05.png"
     ]
    },
    "sleep": {
@@ -1267,10 +1267,10 @@ window.PPP_PACKS = {
     "fps": 3,
     "loop": true,
     "frameFiles": [
-     "frames/sleep_00.png",
-     "frames/sleep_01.png",
-     "frames/sleep_02.png",
-     "frames/sleep_03.png"
+     "variants/zik/frames/sleep_00.png",
+     "variants/zik/frames/sleep_01.png",
+     "variants/zik/frames/sleep_02.png",
+     "variants/zik/frames/sleep_03.png"
     ]
    },
    "happy": {
@@ -1279,10 +1279,10 @@ window.PPP_PACKS = {
     "fps": 8,
     "loop": true,
     "frameFiles": [
-     "frames/happy_00.png",
-     "frames/happy_01.png",
-     "frames/happy_02.png",
-     "frames/happy_03.png"
+     "variants/zik/frames/happy_00.png",
+     "variants/zik/frames/happy_01.png",
+     "variants/zik/frames/happy_02.png",
+     "variants/zik/frames/happy_03.png"
     ]
    },
    "celebrate": {
@@ -1291,14 +1291,14 @@ window.PPP_PACKS = {
     "fps": 10,
     "loop": true,
     "frameFiles": [
-     "frames/celebrate_00.png",
-     "frames/celebrate_01.png",
-     "frames/celebrate_02.png",
-     "frames/celebrate_03.png",
-     "frames/celebrate_04.png",
-     "frames/celebrate_05.png",
-     "frames/celebrate_06.png",
-     "frames/celebrate_07.png"
+     "variants/zik/frames/celebrate_00.png",
+     "variants/zik/frames/celebrate_01.png",
+     "variants/zik/frames/celebrate_02.png",
+     "variants/zik/frames/celebrate_03.png",
+     "variants/zik/frames/celebrate_04.png",
+     "variants/zik/frames/celebrate_05.png",
+     "variants/zik/frames/celebrate_06.png",
+     "variants/zik/frames/celebrate_07.png"
     ]
    }
   },
@@ -1322,8 +1322,187 @@ window.PPP_PACKS = {
    "idle": "sleep"
   },
   "default": "idle",
+  "defaultVariant": "zik",
+  "variants": [
+   {
+    "id": "zik",
+    "name": "Lil' Zik",
+    "sheet": "variants/zik/sheet.png",
+    "paletteColors": 16,
+    "facing": "front",
+    "activities": {
+     "sheet": "variants/zik/activities/activities.png",
+     "frameWidth": 32,
+     "frameHeight": 32,
+     "layout": "row-per-activity",
+     "gearTier": "rune",
+     "propSide": "right",
+     "paletteColors": 16,
+     "map": {
+      "woodcutting": {
+       "row": 0,
+       "frames": 6,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/zik/activities/gifs/woodcutting.gif"
+      },
+      "mining": {
+       "row": 1,
+       "frames": 5,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/zik/activities/gifs/mining.gif"
+      },
+      "fishing": {
+       "row": 2,
+       "frames": 6,
+       "fps": 6,
+       "loop": true,
+       "gif": "variants/zik/activities/gifs/fishing.gif"
+      },
+      "combat": {
+       "row": 3,
+       "frames": 5,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/zik/activities/gifs/combat.gif"
+      },
+      "banking": {
+       "row": 4,
+       "frames": 6,
+       "fps": 7,
+       "loop": true,
+       "gif": "variants/zik/activities/gifs/banking.gif"
+      }
+     },
+     "fallback": "activityMap"
+    }
+   },
+   {
+    "id": "sot",
+    "name": "Lil' Sot (Sotetseg form)",
+    "sheet": "variants/sot/sheet.png",
+    "paletteColors": 16,
+    "facing": "left",
+    "animations": {
+     "idle": {
+      "row": 0,
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "frameFiles": [
+       "variants/sot/frames/idle_00.png",
+       "variants/sot/frames/idle_01.png",
+       "variants/sot/frames/idle_02.png",
+       "variants/sot/frames/idle_03.png"
+      ]
+     },
+     "walk": {
+      "row": 1,
+      "frames": 6,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+       "variants/sot/frames/walk_00.png",
+       "variants/sot/frames/walk_01.png",
+       "variants/sot/frames/walk_02.png",
+       "variants/sot/frames/walk_03.png",
+       "variants/sot/frames/walk_04.png",
+       "variants/sot/frames/walk_05.png"
+      ]
+     },
+     "sleep": {
+      "row": 2,
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "frameFiles": [
+       "variants/sot/frames/sleep_00.png",
+       "variants/sot/frames/sleep_01.png",
+       "variants/sot/frames/sleep_02.png",
+       "variants/sot/frames/sleep_03.png"
+      ]
+     },
+     "happy": {
+      "row": 3,
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+       "variants/sot/frames/happy_00.png",
+       "variants/sot/frames/happy_01.png",
+       "variants/sot/frames/happy_02.png",
+       "variants/sot/frames/happy_03.png"
+      ]
+     },
+     "celebrate": {
+      "row": 4,
+      "frames": 8,
+      "fps": 10,
+      "loop": true,
+      "frameFiles": [
+       "variants/sot/frames/celebrate_00.png",
+       "variants/sot/frames/celebrate_01.png",
+       "variants/sot/frames/celebrate_02.png",
+       "variants/sot/frames/celebrate_03.png",
+       "variants/sot/frames/celebrate_04.png",
+       "variants/sot/frames/celebrate_05.png",
+       "variants/sot/frames/celebrate_06.png",
+       "variants/sot/frames/celebrate_07.png"
+      ]
+     }
+    },
+    "activities": {
+     "sheet": "variants/sot/activities/activities.png",
+     "frameWidth": 32,
+     "frameHeight": 32,
+     "layout": "row-per-activity",
+     "gearTier": "rune",
+     "propSide": "left",
+     "paletteColors": 16,
+     "map": {
+      "woodcutting": {
+       "row": 0,
+       "frames": 6,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/sot/activities/gifs/woodcutting.gif"
+      },
+      "mining": {
+       "row": 1,
+       "frames": 5,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/sot/activities/gifs/mining.gif"
+      },
+      "fishing": {
+       "row": 2,
+       "frames": 6,
+       "fps": 6,
+       "loop": true,
+       "gif": "variants/sot/activities/gifs/fishing.gif"
+      },
+      "combat": {
+       "row": 3,
+       "frames": 5,
+       "fps": 8,
+       "loop": true,
+       "gif": "variants/sot/activities/gifs/combat.gif"
+      },
+      "banking": {
+       "row": 4,
+       "frames": 6,
+       "fps": 7,
+       "loop": true,
+       "gif": "variants/sot/activities/gifs/banking.gif"
+      }
+     },
+     "fallback": "activityMap"
+    }
+   }
+  ],
   "activities": {
-   "sheet": "activities/activities.png",
+   "sheet": "variants/zik/activities/activities.png",
    "frameWidth": 32,
    "frameHeight": 32,
    "layout": "row-per-activity",
@@ -1336,35 +1515,35 @@ window.PPP_PACKS = {
      "frames": 6,
      "fps": 8,
      "loop": true,
-     "gif": "activities/gifs/woodcutting.gif"
+     "gif": "variants/zik/activities/gifs/woodcutting.gif"
     },
     "mining": {
      "row": 1,
      "frames": 5,
      "fps": 8,
      "loop": true,
-     "gif": "activities/gifs/mining.gif"
+     "gif": "variants/zik/activities/gifs/mining.gif"
     },
     "fishing": {
      "row": 2,
      "frames": 6,
      "fps": 6,
      "loop": true,
-     "gif": "activities/gifs/fishing.gif"
+     "gif": "variants/zik/activities/gifs/fishing.gif"
     },
     "combat": {
      "row": 3,
      "frames": 5,
      "fps": 8,
      "loop": true,
-     "gif": "activities/gifs/combat.gif"
+     "gif": "variants/zik/activities/gifs/combat.gif"
     },
     "banking": {
      "row": 4,
      "frames": 6,
      "fps": 7,
      "loop": true,
-     "gif": "activities/gifs/banking.gif"
+     "gif": "variants/zik/activities/gifs/banking.gif"
     }
    },
    "fallback": "activityMap"
@@ -2264,6 +2443,831 @@ window.PPP_PACKS = {
    "gearTier": "rune",
    "propSide": "right",
    "paletteColors": 14,
+   "map": {
+    "woodcutting": {
+     "row": 0,
+     "frames": 6,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/woodcutting.gif"
+    },
+    "mining": {
+     "row": 1,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/mining.gif"
+    },
+    "fishing": {
+     "row": 2,
+     "frames": 6,
+     "fps": 6,
+     "loop": true,
+     "gif": "activities/gifs/fishing.gif"
+    },
+    "combat": {
+     "row": 3,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/combat.gif"
+    },
+    "banking": {
+     "row": 4,
+     "frames": 6,
+     "fps": 7,
+     "loop": true,
+     "gif": "activities/gifs/banking.gif"
+    }
+   },
+   "fallback": "activityMap"
+  }
+ },
+ "baron": {
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "baron",
+  "name": "Baron",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+   "file": "sheet.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "columns": 8,
+   "rows": 5,
+   "layout": "row-per-animation"
+  },
+  "anchor": {
+   "x": 16,
+   "y": 30
+  },
+  "offset": {
+   "x": 0,
+   "y": 0
+  },
+  "facing": "left",
+  "scale": {
+   "recommended": 4,
+   "filter": "nearest"
+  },
+  "paletteColors": 16,
+  "animations": {
+   "idle": {
+    "row": 0,
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "frameFiles": [
+     "frames/idle_00.png",
+     "frames/idle_01.png",
+     "frames/idle_02.png",
+     "frames/idle_03.png"
+    ]
+   },
+   "walk": {
+    "row": 1,
+    "frames": 6,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/walk_00.png",
+     "frames/walk_01.png",
+     "frames/walk_02.png",
+     "frames/walk_03.png",
+     "frames/walk_04.png",
+     "frames/walk_05.png"
+    ]
+   },
+   "sleep": {
+    "row": 2,
+    "frames": 4,
+    "fps": 3,
+    "loop": true,
+    "frameFiles": [
+     "frames/sleep_00.png",
+     "frames/sleep_01.png",
+     "frames/sleep_02.png",
+     "frames/sleep_03.png"
+    ]
+   },
+   "happy": {
+    "row": 3,
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/happy_00.png",
+     "frames/happy_01.png",
+     "frames/happy_02.png",
+     "frames/happy_03.png"
+    ]
+   },
+   "celebrate": {
+    "row": 4,
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "frameFiles": [
+     "frames/celebrate_00.png",
+     "frames/celebrate_01.png",
+     "frames/celebrate_02.png",
+     "frames/celebrate_03.png",
+     "frames/celebrate_04.png",
+     "frames/celebrate_05.png",
+     "frames/celebrate_06.png",
+     "frames/celebrate_07.png"
+    ]
+   }
+  },
+  "activityMap": {
+   "skilling": "happy",
+   "combat": "walk",
+   "bossing": "walk",
+   "banking": "idle",
+   "traveling": "walk",
+   "minigame": "happy",
+   "idle": "sleep"
+  },
+  "eventMap": {
+   "level_up": "celebrate",
+   "pet_drop": "celebrate",
+   "loot": "happy",
+   "quest": "celebrate",
+   "death": "sleep",
+   "login": "happy",
+   "logout": "sleep",
+   "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+   "sheet": "activities/activities.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "layout": "row-per-activity",
+   "gearTier": "rune",
+   "propSide": "left",
+   "paletteColors": 16,
+   "map": {
+    "woodcutting": {
+     "row": 0,
+     "frames": 6,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/woodcutting.gif"
+    },
+    "mining": {
+     "row": 1,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/mining.gif"
+    },
+    "fishing": {
+     "row": 2,
+     "frames": 6,
+     "fps": 6,
+     "loop": true,
+     "gif": "activities/gifs/fishing.gif"
+    },
+    "combat": {
+     "row": 3,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/combat.gif"
+    },
+    "banking": {
+     "row": 4,
+     "frames": 6,
+     "fps": 7,
+     "loop": true,
+     "gif": "activities/gifs/banking.gif"
+    }
+   },
+   "fallback": "activityMap"
+  }
+ },
+ "callisto-cub": {
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "callisto-cub",
+  "name": "Callisto cub",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+   "file": "sheet.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "columns": 8,
+   "rows": 5,
+   "layout": "row-per-animation"
+  },
+  "anchor": {
+   "x": 16,
+   "y": 30
+  },
+  "offset": {
+   "x": 0,
+   "y": 0
+  },
+  "facing": "left",
+  "scale": {
+   "recommended": 4,
+   "filter": "nearest"
+  },
+  "paletteColors": 15,
+  "animations": {
+   "idle": {
+    "row": 0,
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "frameFiles": [
+     "frames/idle_00.png",
+     "frames/idle_01.png",
+     "frames/idle_02.png",
+     "frames/idle_03.png"
+    ]
+   },
+   "walk": {
+    "row": 1,
+    "frames": 6,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/walk_00.png",
+     "frames/walk_01.png",
+     "frames/walk_02.png",
+     "frames/walk_03.png",
+     "frames/walk_04.png",
+     "frames/walk_05.png"
+    ]
+   },
+   "sleep": {
+    "row": 2,
+    "frames": 4,
+    "fps": 3,
+    "loop": true,
+    "frameFiles": [
+     "frames/sleep_00.png",
+     "frames/sleep_01.png",
+     "frames/sleep_02.png",
+     "frames/sleep_03.png"
+    ]
+   },
+   "happy": {
+    "row": 3,
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/happy_00.png",
+     "frames/happy_01.png",
+     "frames/happy_02.png",
+     "frames/happy_03.png"
+    ]
+   },
+   "celebrate": {
+    "row": 4,
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "frameFiles": [
+     "frames/celebrate_00.png",
+     "frames/celebrate_01.png",
+     "frames/celebrate_02.png",
+     "frames/celebrate_03.png",
+     "frames/celebrate_04.png",
+     "frames/celebrate_05.png",
+     "frames/celebrate_06.png",
+     "frames/celebrate_07.png"
+    ]
+   }
+  },
+  "activityMap": {
+   "skilling": "happy",
+   "combat": "walk",
+   "bossing": "walk",
+   "banking": "idle",
+   "traveling": "walk",
+   "minigame": "happy",
+   "idle": "sleep"
+  },
+  "eventMap": {
+   "level_up": "celebrate",
+   "pet_drop": "celebrate",
+   "loot": "happy",
+   "quest": "celebrate",
+   "death": "sleep",
+   "login": "happy",
+   "logout": "sleep",
+   "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+   "sheet": "activities/activities.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "layout": "row-per-activity",
+   "gearTier": "rune",
+   "propSide": "left",
+   "paletteColors": 16,
+   "map": {
+    "woodcutting": {
+     "row": 0,
+     "frames": 6,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/woodcutting.gif"
+    },
+    "mining": {
+     "row": 1,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/mining.gif"
+    },
+    "fishing": {
+     "row": 2,
+     "frames": 6,
+     "fps": 6,
+     "loop": true,
+     "gif": "activities/gifs/fishing.gif"
+    },
+    "combat": {
+     "row": 3,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/combat.gif"
+    },
+    "banking": {
+     "row": 4,
+     "frames": 6,
+     "fps": 7,
+     "loop": true,
+     "gif": "activities/gifs/banking.gif"
+    }
+   },
+   "fallback": "activityMap"
+  }
+ },
+ "chaos-elemental": {
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "chaos-elemental",
+  "name": "Pet chaos elemental",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+   "file": "sheet.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "columns": 8,
+   "rows": 5,
+   "layout": "row-per-animation"
+  },
+  "anchor": {
+   "x": 16,
+   "y": 30
+  },
+  "offset": {
+   "x": 0,
+   "y": 0
+  },
+  "facing": "front",
+  "scale": {
+   "recommended": 4,
+   "filter": "nearest"
+  },
+  "paletteColors": 13,
+  "animations": {
+   "idle": {
+    "row": 0,
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "frameFiles": [
+     "frames/idle_00.png",
+     "frames/idle_01.png",
+     "frames/idle_02.png",
+     "frames/idle_03.png"
+    ]
+   },
+   "walk": {
+    "row": 1,
+    "frames": 6,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/walk_00.png",
+     "frames/walk_01.png",
+     "frames/walk_02.png",
+     "frames/walk_03.png",
+     "frames/walk_04.png",
+     "frames/walk_05.png"
+    ]
+   },
+   "sleep": {
+    "row": 2,
+    "frames": 4,
+    "fps": 3,
+    "loop": true,
+    "frameFiles": [
+     "frames/sleep_00.png",
+     "frames/sleep_01.png",
+     "frames/sleep_02.png",
+     "frames/sleep_03.png"
+    ]
+   },
+   "happy": {
+    "row": 3,
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/happy_00.png",
+     "frames/happy_01.png",
+     "frames/happy_02.png",
+     "frames/happy_03.png"
+    ]
+   },
+   "celebrate": {
+    "row": 4,
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "frameFiles": [
+     "frames/celebrate_00.png",
+     "frames/celebrate_01.png",
+     "frames/celebrate_02.png",
+     "frames/celebrate_03.png",
+     "frames/celebrate_04.png",
+     "frames/celebrate_05.png",
+     "frames/celebrate_06.png",
+     "frames/celebrate_07.png"
+    ]
+   }
+  },
+  "activityMap": {
+   "skilling": "happy",
+   "combat": "walk",
+   "bossing": "walk",
+   "banking": "idle",
+   "traveling": "walk",
+   "minigame": "happy",
+   "idle": "sleep"
+  },
+  "eventMap": {
+   "level_up": "celebrate",
+   "pet_drop": "celebrate",
+   "loot": "happy",
+   "quest": "celebrate",
+   "death": "sleep",
+   "login": "happy",
+   "logout": "sleep",
+   "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+   "sheet": "activities/activities.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "layout": "row-per-activity",
+   "gearTier": "rune",
+   "propSide": "right",
+   "paletteColors": 16,
+   "map": {
+    "woodcutting": {
+     "row": 0,
+     "frames": 6,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/woodcutting.gif"
+    },
+    "mining": {
+     "row": 1,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/mining.gif"
+    },
+    "fishing": {
+     "row": 2,
+     "frames": 6,
+     "fps": 6,
+     "loop": true,
+     "gif": "activities/gifs/fishing.gif"
+    },
+    "combat": {
+     "row": 3,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/combat.gif"
+    },
+    "banking": {
+     "row": 4,
+     "frames": 6,
+     "fps": 7,
+     "loop": true,
+     "gif": "activities/gifs/banking.gif"
+    }
+   },
+   "fallback": "activityMap"
+  }
+ },
+ "penance-queen": {
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "penance-queen",
+  "name": "Pet penance queen",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+   "file": "sheet.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "columns": 8,
+   "rows": 5,
+   "layout": "row-per-animation"
+  },
+  "anchor": {
+   "x": 16,
+   "y": 30
+  },
+  "offset": {
+   "x": 0,
+   "y": 0
+  },
+  "facing": "left",
+  "scale": {
+   "recommended": 4,
+   "filter": "nearest"
+  },
+  "paletteColors": 16,
+  "animations": {
+   "idle": {
+    "row": 0,
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "frameFiles": [
+     "frames/idle_00.png",
+     "frames/idle_01.png",
+     "frames/idle_02.png",
+     "frames/idle_03.png"
+    ]
+   },
+   "walk": {
+    "row": 1,
+    "frames": 6,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/walk_00.png",
+     "frames/walk_01.png",
+     "frames/walk_02.png",
+     "frames/walk_03.png",
+     "frames/walk_04.png",
+     "frames/walk_05.png"
+    ]
+   },
+   "sleep": {
+    "row": 2,
+    "frames": 4,
+    "fps": 3,
+    "loop": true,
+    "frameFiles": [
+     "frames/sleep_00.png",
+     "frames/sleep_01.png",
+     "frames/sleep_02.png",
+     "frames/sleep_03.png"
+    ]
+   },
+   "happy": {
+    "row": 3,
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/happy_00.png",
+     "frames/happy_01.png",
+     "frames/happy_02.png",
+     "frames/happy_03.png"
+    ]
+   },
+   "celebrate": {
+    "row": 4,
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "frameFiles": [
+     "frames/celebrate_00.png",
+     "frames/celebrate_01.png",
+     "frames/celebrate_02.png",
+     "frames/celebrate_03.png",
+     "frames/celebrate_04.png",
+     "frames/celebrate_05.png",
+     "frames/celebrate_06.png",
+     "frames/celebrate_07.png"
+    ]
+   }
+  },
+  "activityMap": {
+   "skilling": "happy",
+   "combat": "walk",
+   "bossing": "walk",
+   "banking": "idle",
+   "traveling": "walk",
+   "minigame": "happy",
+   "idle": "sleep"
+  },
+  "eventMap": {
+   "level_up": "celebrate",
+   "pet_drop": "celebrate",
+   "loot": "happy",
+   "quest": "celebrate",
+   "death": "sleep",
+   "login": "happy",
+   "logout": "sleep",
+   "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+   "sheet": "activities/activities.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "layout": "row-per-activity",
+   "gearTier": "rune",
+   "propSide": "left",
+   "paletteColors": 16,
+   "map": {
+    "woodcutting": {
+     "row": 0,
+     "frames": 6,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/woodcutting.gif"
+    },
+    "mining": {
+     "row": 1,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/mining.gif"
+    },
+    "fishing": {
+     "row": 2,
+     "frames": 6,
+     "fps": 6,
+     "loop": true,
+     "gif": "activities/gifs/fishing.gif"
+    },
+    "combat": {
+     "row": 3,
+     "frames": 5,
+     "fps": 8,
+     "loop": true,
+     "gif": "activities/gifs/combat.gif"
+    },
+    "banking": {
+     "row": 4,
+     "frames": 6,
+     "fps": 7,
+     "loop": true,
+     "gif": "activities/gifs/banking.gif"
+    }
+   },
+   "fallback": "activityMap"
+  }
+ },
+ "soup": {
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "soup",
+  "name": "Soup",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+   "file": "sheet.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "columns": 8,
+   "rows": 5,
+   "layout": "row-per-animation"
+  },
+  "anchor": {
+   "x": 16,
+   "y": 30
+  },
+  "offset": {
+   "x": 0,
+   "y": 0
+  },
+  "facing": "front",
+  "scale": {
+   "recommended": 4,
+   "filter": "nearest"
+  },
+  "paletteColors": 13,
+  "animations": {
+   "idle": {
+    "row": 0,
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "frameFiles": [
+     "frames/idle_00.png",
+     "frames/idle_01.png",
+     "frames/idle_02.png",
+     "frames/idle_03.png"
+    ]
+   },
+   "walk": {
+    "row": 1,
+    "frames": 6,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/walk_00.png",
+     "frames/walk_01.png",
+     "frames/walk_02.png",
+     "frames/walk_03.png",
+     "frames/walk_04.png",
+     "frames/walk_05.png"
+    ]
+   },
+   "sleep": {
+    "row": 2,
+    "frames": 4,
+    "fps": 3,
+    "loop": true,
+    "frameFiles": [
+     "frames/sleep_00.png",
+     "frames/sleep_01.png",
+     "frames/sleep_02.png",
+     "frames/sleep_03.png"
+    ]
+   },
+   "happy": {
+    "row": 3,
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "frameFiles": [
+     "frames/happy_00.png",
+     "frames/happy_01.png",
+     "frames/happy_02.png",
+     "frames/happy_03.png"
+    ]
+   },
+   "celebrate": {
+    "row": 4,
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "frameFiles": [
+     "frames/celebrate_00.png",
+     "frames/celebrate_01.png",
+     "frames/celebrate_02.png",
+     "frames/celebrate_03.png",
+     "frames/celebrate_04.png",
+     "frames/celebrate_05.png",
+     "frames/celebrate_06.png",
+     "frames/celebrate_07.png"
+    ]
+   }
+  },
+  "activityMap": {
+   "skilling": "happy",
+   "combat": "walk",
+   "bossing": "walk",
+   "banking": "idle",
+   "traveling": "walk",
+   "minigame": "happy",
+   "idle": "sleep"
+  },
+  "eventMap": {
+   "level_up": "celebrate",
+   "pet_drop": "celebrate",
+   "loot": "happy",
+   "quest": "celebrate",
+   "death": "sleep",
+   "login": "happy",
+   "logout": "sleep",
+   "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+   "sheet": "activities/activities.png",
+   "frameWidth": 32,
+   "frameHeight": 32,
+   "layout": "row-per-activity",
+   "gearTier": "rune",
+   "propSide": "right",
+   "paletteColors": 16,
    "map": {
     "woodcutting": {
      "row": 0,

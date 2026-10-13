@@ -6,9 +6,9 @@
   const $ = id => document.getElementById(id);
   if (q.get("size") === "compact") card.classList.add("compact");
   if (q.get("bg")) document.body.classList.add("bg");
-  const m = await (await fetch(`${PACKS}/${PET}/manifest.json`)).json();
-  const errs = PPPPack.validatePack(m); if (errs.length) console.warn("pack issues", errs);
-  const { file, variant } = PPPPack.resolveSheet(m, q.get("variant"));
+  const raw = await (await fetch(`${PACKS}/${PET}/manifest.json`)).json();
+  const errs = PPPPack.validatePack(raw); if (errs.length) console.warn("pack issues", errs);
+  const V = PPPPack.resolveVariant(raw, q.get("variant")), m = V.m, { file, variant } = V;
   const fw = m.sheet.frameWidth, fh = m.sheet.frameHeight, compact = card.classList.contains("compact");
   // Stage interiors: overlay 96x96 (3px/src px for 32x32), compact 64x64 (2px). Tall packs drop one integer step.
   const K = PPPPack.fitScale(m, compact ? 2 : 3, compact ? 64 : 96, compact ? 64 : 96);
@@ -20,7 +20,7 @@
   el.classList.toggle("flip", PPPPack.needsFlip(m));
   el.dataset.pet = m.id; el.dataset.variant = variant || ""; el.dataset.facing = m.facing || "right";
   let timer, reset, since = null;
-  const acts = PPPPack.resolveActivities(m, variant), actGrid = acts && PPPPack.activitiesGrid(acts);
+  const acts = V.activities, actGrid = acts && PPPPack.activitiesGrid(acts);
   const baseSheet = { img: `url(${PACKS}/${PET}/${file})`, size: `${m.sheet.columns * fw * K}px ${m.sheet.rows * fh * K}px` };
   const actSheet = acts && { img: `url(${PACKS}/${PET}/${acts.sheet})`, size: `${actGrid.columns * fw * K}px ${actGrid.rows * fh * K}px` };
   // Preload the activities sheet. If it fails (404, broken custom pack), activities are disabled and we fall back to
@@ -70,7 +70,7 @@
     else if (e.type === "activity") playActivity(e.activity);
     else play(anim);
   }
-  window.__petOnEvent = onEvent;
+  window.__petOnEvent = onEvent; window.__petPlay = play;  // test hooks (test/browser-check.js)
   play("sleep");
   // Static demo mode (no relay): ?demo=<type or activity category>&ago=<minutes>&target=&skill=
   const demo = q.get("demo");

@@ -1,0 +1,165 @@
+{
+  "schema": "pixel-pet-pals/pack@1",
+  "id": "chaos-elemental",
+  "name": "Pet chaos elemental",
+  "pack": "A-osrs-style",
+  "version": "0.5.0",
+  "license": "LICENSE.md",
+  "sheet": {
+    "file": "sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "columns": 8,
+    "rows": 5,
+    "layout": "row-per-animation"
+  },
+  "anchor": {
+    "x": 16,
+    "y": 30
+  },
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "facing": "front",
+  "scale": {
+    "recommended": 4,
+    "filter": "nearest"
+  },
+  "paletteColors": 13,
+  "animations": {
+    "idle": {
+      "row": 0,
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "frameFiles": [
+        "frames/idle_00.png",
+        "frames/idle_01.png",
+        "frames/idle_02.png",
+        "frames/idle_03.png"
+      ]
+    },
+    "walk": {
+      "row": 1,
+      "frames": 6,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+        "frames/walk_00.png",
+        "frames/walk_01.png",
+        "frames/walk_02.png",
+        "frames/walk_03.png",
+        "frames/walk_04.png",
+        "frames/walk_05.png"
+      ]
+    },
+    "sleep": {
+      "row": 2,
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "frameFiles": [
+        "frames/sleep_00.png",
+        "frames/sleep_01.png",
+        "frames/sleep_02.png",
+        "frames/sleep_03.png"
+      ]
+    },
+    "happy": {
+      "row": 3,
+      "frames": 4,
+      "fps": 8,
+      "loop": true,
+      "frameFiles": [
+        "frames/happy_00.png",
+        "frames/happy_01.png",
+        "frames/happy_02.png",
+        "frames/happy_03.png"
+      ]
+    },
+    "celebrate": {
+      "row": 4,
+      "frames": 8,
+      "fps": 10,
+      "loop": true,
+      "frameFiles": [
+        "frames/celebrate_00.png",
+        "frames/celebrate_01.png",
+        "frames/celebrate_02.png",
+        "frames/celebrate_03.png",
+        "frames/celebrate_04.png",
+        "frames/celebrate_05.png",
+        "frames/celebrate_06.png",
+        "frames/celebrate_07.png"
+      ]
+    }
+  },
+  "activityMap": {
+    "skilling": "happy",
+    "combat": "walk",
+    "bossing": "walk",
+    "banking": "idle",
+    "traveling": "walk",
+    "minigame": "happy",
+    "idle": "sleep"
+  },
+  "eventMap": {
+    "level_up": "celebrate",
+    "pet_drop": "celebrate",
+    "loot": "happy",
+    "quest": "celebrate",
+    "death": "sleep",
+    "login": "happy",
+    "logout": "sleep",
+    "idle": "sleep"
+  },
+  "default": "idle",
+  "activities": {
+    "sheet": "activities/activities.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "layout": "row-per-activity",
+    "gearTier": "rune",
+    "propSide": "right",
+    "paletteColors": 16,
+    "map": {
+      "woodcutting": {
+        "row": 0,
+        "frames": 6,
+        "fps": 8,
+        "loop": true,
+        "gif": "activities/gifs/woodcutting.gif"
+      },
+      "mining": {
+        "row": 1,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "activities/gifs/mining.gif"
+      },
+      "fishing": {
+        "row": 2,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "gif": "activities/gifs/fishing.gif"
+      },
+      "combat": {
+        "row": 3,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "activities/gifs/combat.gif"
+      },
+      "banking": {
+        "row": 4,
+        "frames": 6,
+        "fps": 7,
+        "loop": true,
+        "gif": "activities/gifs/banking.gif"
+      }
+    },
+    "fallback": "activityMap"
+  }
+}

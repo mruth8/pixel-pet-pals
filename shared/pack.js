@@ -12,7 +12,14 @@
     if (m.facing !== undefined && !["left", "right", "front"].includes(m.facing)) e.push("facing must be left|right|front");
     if (m.variants !== undefined) {
       if (!Array.isArray(m.variants)) e.push("variants must be array");
-      else for (const v of m.variants) if (!v.id || !v.sheet) e.push("variant needs id and sheet");
+      else for (const v of m.variants) {
+        if (!v.id || !v.sheet) e.push("variant needs id and sheet");
+        if (v.facing !== undefined && !["left", "right", "front"].includes(v.facing)) e.push("variants." + v.id + ".facing must be left|right|front");
+        // Optional own frames (v6): same layout as the base animations (row/frames/fps identical), own frameFiles.
+        if (v.animations !== undefined) for (const a of BASE) { const x = v.animations[a], b = (m.animations || {})[a];
+          if (!x) e.push("variants." + v.id + ".animations." + a + " required");
+          else if (b && (x.row !== b.row || x.frames !== b.frames || x.fps !== b.fps)) e.push("variants." + v.id + ".animations." + a + " must match the base row/frames/fps"); }
+      }
       if (m.defaultVariant && !(m.variants || []).some(v => v.id === m.defaultVariant)) e.push("defaultVariant not in variants");
     }
     // Optional `activities` blocks (v0.5.0): top level and/or per variant. paletteColors counts PROP colours only (<=16).
@@ -60,11 +67,22 @@
     const v = vs.find(x => x.id === variant) || vs.find(x => x.id === m.defaultVariant);
     return { file: v ? v.sheet : m.sheet.file, variant: v ? v.id : null };
   }
+  // Effective pack for a variant (v6): a variant's own sheet, animations, activities and facing win; anything it
+  // doesn't list falls back to the top level (plain colour-swap variants only list a sheet). Requested -> defaultVariant.
+  function resolveVariant(m, variant) {
+    const vs = m.variants || [];
+    const v = vs.find(x => x.id === variant) || vs.find(x => x.id === m.defaultVariant) || null;
+    if (!v) return { variant: null, file: m.sheet.file, animations: m.animations, activities: m.activities || null, facing: m.facing || "right", m };
+    const animations = v.animations ? Object.assign({}, m.animations, v.animations) : m.animations;
+    const facing = v.facing || m.facing || "right";
+    return { variant: v.id, file: v.sheet || m.sheet.file, animations, activities: v.activities || m.activities || null, facing,
+      m: Object.assign({}, m, { animations, facing, activities: v.activities || m.activities }) };
+  }
   // Text sits to the right of the pet, so the pet should face right.
   // "front"-facing art is symmetric enough to never mirror.
   function needsFlip(m, textSide = "right") { const f = m.facing || "right"; return f !== "front" && f !== textSide; }
   // Largest integer scale that fits the stage; taller frames (e.g. 32x40) drop a step so nothing is cropped.
   function fitScale(m, maxK, stageW, stageH) { let k = maxK; while (k > 1 && (m.sheet.frameWidth * k > stageW || m.sheet.frameHeight * k > stageH)) k--; return k; }
-  const api = { validatePack, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale };
+  const api = { validatePack, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale, resolveVariant };
   if (typeof module !== "undefined") module.exports = api; else root.PPPPack = api;
 })(this);
