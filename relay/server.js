@@ -33,6 +33,7 @@ http.createServer((req, res) => {
     clients.add(res); req.on("close", () => clients.delete(res)); return;
   }
   if (url.pathname === "/state") { res.writeHead(200, {"content-type":"application/json"}); return res.end(JSON.stringify(latest)); }
+  if (/^\/(widget|packs|shared)$/.test(url.pathname)) { res.writeHead(301, { location: url.pathname + "/" + url.search }); return res.end(); }
   if (url.pathname === "/") { res.writeHead(302, { location: "/widget/" }); return res.end(); }
   let p = url.pathname.endsWith("/") ? url.pathname + "index.html" : url.pathname;
   const f = path.normalize(path.join(ROOT, p));

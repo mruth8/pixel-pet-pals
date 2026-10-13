@@ -7,14 +7,14 @@ Milestone 1: event format v1, mock sender, placeholder widget with one pet (from
 ```
 node relay/server.js                 # reference relay + widget on http://127.0.0.1:8787 (loopback only)
 node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once)
-open http://localhost:8787/widget/   # widget; ?pet=olmlet|baby-mole|baby-chinchompa &variant=red &size=compact &player= &stream= &packs=
+open http://localhost:8787/widget/   # widget; ?pet=<pack id, see docs/pack-format-v1.md> &variant=red &size=compact &player= &stream= &packs=
 npm test                             # pack + relay smoke tests
 node --experimental-websocket test/browser-check.js   # headless Chrome; screenshots -> screenshots/ (gitignored)
 node --experimental-websocket test/site-check.js      # serves site/ alone at /matthew/pixel-pet-pals/; screenshots/site.png
 ```
 Optional shared secret: `PET_SECRET=s node relay/server.js` + `--secret s` on the sender (header `X-Pet-Secret`).
 
-Layout: `docs/event-format-v1.md`, `schema/` (JSON Schema + TS types), `shared/validate.js`, `relay/`, `mock-sender/`, `widget/` (card styled from the approved design mockup), `packs/` (final Olmlet, Baby Mole, Baby Chinchompa + dev placeholder; format in `docs/pack-format-v1.md`, `schema/pack-v1.schema.json`).
+Layout: `docs/event-format-v1.md`, `schema/` (JSON Schema + TS types), `shared/validate.js`, `relay/`, `mock-sender/`, `widget/` (card styled from the approved design mockup), `packs/` (12 pets as of v0.4.0 + dev placeholder; format in `docs/pack-format-v1.md`, `schema/pack-v1.schema.json`).
 
 ## Designed-in for the plugin MVP (milestone 2)
 - **Outbound only to a user-set URL**: sender takes the URL as config; relay is the receiving side, never inside the plugin.
