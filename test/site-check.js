@@ -51,7 +51,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
       return {imgs,distorted,petNames,ws,overflow,base:document.baseURI}})()` })).result.value;
     if (r.imgs.length) fail(tag + " broken images " + r.imgs);
     if (r.distorted.length) fail(tag + " distorted images " + r.distorted);
-    for (const n of ["Olmlet","Baby Mole","Baby Chinchompa","Heron","Rocky","Phoenix","Lil' Zik","Beef","Youngllef","Crystal Youngllef","Abyssal orphan","Butch","Lil'viathan"]) if (!r.petNames.includes(n)) fail(tag + " pet missing " + n);
+    for (const n of ["Olmlet","Baby Mole","Baby Chinchompa","Heron","Rocky","Phoenix","Lil' Zik","Beef","Youngllef","Crystal Youngllef","Abyssal orphan","Butch","Lil'viathan","Baron","Callisto cub","Chaos elemental","Penance queen","Soup","Lil' Sot"]) if (!r.petNames.includes(n)) fail(tag + " pet missing " + n);
     if (r.overflow > 0) fail(tag + " page overflows by " + r.overflow + "px");
     if (!r.base.endsWith(PREFIX)) fail(tag + " baseURI " + r.base);
     for (const w of r.ws) {
@@ -67,7 +67,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
     const m = await call("Page.getLayoutMetrics"); const h = Math.ceil(m.cssContentSize.height);
     const s = await call("Page.captureScreenshot", { captureBeyondViewport: true, clip: { x: 0, y: 0, width: vw, height: h, scale: 1 } });
     fs.mkdirSync(OUT, { recursive: true });
-    const name = `v5-site-${vw}${slash ? "" : "-noslash"}.png`;
+    const name = `v6-site-${vw}${slash ? "" : "-noslash"}.png`;
     fs.writeFileSync(path.join(OUT, name), Buffer.from(s.data, "base64")); console.log("  screenshot -> screenshots/" + name);
   }
   H.cleanup(); console.log(bad ? `FAIL (${bad})` : "PASS: site check"); process.exit(bad ? 1 : 0);

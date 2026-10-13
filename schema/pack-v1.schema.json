@@ -133,7 +133,7 @@
     },
     "variants": {
       "type": "array",
-      "description": "Optional colourways sharing the same layout/animations.",
+      "description": "Optional colourways or forms. Colour swaps list only a sheet; a form with its own frames (v6) may also list facing, animations and activities, which override the top level for that variant.",
       "items": {
         "type": "object",
         "required": [
@@ -155,6 +155,43 @@
           },
           "activities": {
             "$ref": "#/$defs/activities"
+          },
+          "facing": {
+            "enum": [
+              "left",
+              "right",
+              "front"
+            ],
+            "description": "Optional (v6). Overrides the top-level facing for this variant."
+          },
+          "animations": {
+            "type": "object",
+            "description": "Optional (v6). The variant's own frames: same keys and row/frames/fps as the top-level animations, own frameFiles.",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "row",
+                "frames",
+                "fps"
+              ],
+              "properties": {
+                "row": {
+                  "type": "integer"
+                },
+                "frames": {
+                  "type": "integer"
+                },
+                "fps": {
+                  "type": "number"
+                },
+                "loop": {
+                  "type": "boolean"
+                },
+                "frameFiles": {
+                  "type": "array"
+                }
+              }
+            }
           }
         }
       }

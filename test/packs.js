@@ -61,3 +61,20 @@ chk(pickActivity({ ...old, activityMap: {} }, null, { category: "skilling" }).ke
 const yl = ld("youngllef"); chk(resolveActivities(yl, "crystal").gearTier === "dragon" && resolveActivities(yl).gearTier === "rune", "variant activities");
 chk(validateActivities({ ...ha, paletteColors: 29 }, h.sheet).length > 0, "paletteColors > 16 rejected");
 console.log(`PASS: activities (${actBlocks} blocks, prop colour counts match, fallback chain)`);
+// v6: batch 2 packs + variant frame override (lil-zik/sot), colour-swap variants unchanged.
+{ const { resolveVariant } = require("../shared/pack");
+  const chk = (c, msg) => { if (!c) { console.error("FAIL", msg); process.exit(1); } };
+  for (const p of ["baron","callisto-cub","chaos-elemental","penance-queen","soup","lil-zik"]) chk(ids.includes(p) && !validatePack(ld(p)).length, "v6 pack " + p);
+  for (const id of ids) { const m = ld(id), b = path.join(dir, id);
+    for (const v of m.variants || []) for (const [n, a] of Object.entries(v.animations || {})) for (const f of a.frameFiles || []) chk(fs.existsSync(path.join(b, f)), `${id}/${v.id} ${n} frame ${f}`); }
+  const z = ld("lil-zik"), d = resolveVariant(z), s = resolveVariant(z, "sot"), u = resolveVariant(z, "nope");
+  chk(d.variant === "zik" && u.variant === "zik" && d.facing === "front" && d.file === "variants/zik/sheet.png", "lil-zik defaults to zik");
+  chk(s.variant === "sot" && s.file === "variants/sot/sheet.png" && s.facing === "left" && needsFlip(s.m) === true, "sot own sheet + facing");
+  chk(s.animations.idle.frameFiles[0].startsWith("variants/sot/") && d.animations.idle.frameFiles[0] !== s.animations.idle.frameFiles[0], "sot own frames");
+  chk(s.activities.sheet === "variants/sot/activities/activities.png" && d.activities.sheet === "variants/zik/activities/activities.png", "sot own activities");
+  chk(s.m.animations.celebrate.row === z.animations.celebrate.row && s.m.default === z.default, "sot keeps layout + top-level fields");
+  for (const [id, vs] of [["baby-chinchompa", ["grey","red","black","gold"]], ["youngllef", ["corrupted","crystal"]]]) { const m = ld(id);
+    for (const v of vs) { const r = resolveVariant(m, v); chk(r.variant === v && r.file === resolveSheet(m, v).file && r.animations === m.animations && r.facing === (m.facing || "right") && r.activities === resolveActivities(m, v), `${id}/${v} colour swap unchanged`); } }
+  chk(validatePack({ ...z, variants: [{ ...z.variants[1], facing: "up" }] }).length > 0, "bad variant facing rejected");
+  chk(validatePack({ ...z, variants: [{ ...z.variants[1], animations: { ...z.variants[1].animations, walk: { ...z.variants[1].animations.walk, frames: 3 } } }] }).length > 0, "variant layout mismatch rejected");
+  console.log(`PASS: v6 packs (${ids.length} manifests, lil-zik sot frame/facing/activities override, colour swaps unchanged)`); }
