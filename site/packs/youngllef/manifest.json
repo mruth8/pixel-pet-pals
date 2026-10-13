@@ -3,7 +3,7 @@
   "id": "youngllef",
   "name": "Youngllef",
   "pack": "A-osrs-style",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "LICENSE.md",
   "sheet": {
     "file": "variants/corrupted/sheet.png",
@@ -121,13 +121,154 @@
       "id": "corrupted",
       "name": "Corrupted",
       "sheet": "variants/corrupted/sheet.png",
-      "paletteColors": 13
+      "paletteColors": 13,
+      "activities": {
+        "sheet": "variants/corrupted/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "rune",
+        "propSide": "left",
+        "paletteColors": 16,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/corrupted/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/corrupted/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/corrupted/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/corrupted/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/corrupted/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     },
     {
       "id": "crystal",
       "name": "Crystal",
       "sheet": "variants/crystal/sheet.png",
-      "paletteColors": 13
+      "paletteColors": 13,
+      "activities": {
+        "sheet": "variants/crystal/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "dragon",
+        "propSide": "left",
+        "paletteColors": 15,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/crystal/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/crystal/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/crystal/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/crystal/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/crystal/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     }
-  ]
+  ],
+  "activities": {
+    "sheet": "variants/corrupted/activities/activities.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "layout": "row-per-activity",
+    "gearTier": "rune",
+    "propSide": "left",
+    "paletteColors": 16,
+    "map": {
+      "woodcutting": {
+        "row": 0,
+        "frames": 6,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/corrupted/activities/gifs/woodcutting.gif"
+      },
+      "mining": {
+        "row": 1,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/corrupted/activities/gifs/mining.gif"
+      },
+      "fishing": {
+        "row": 2,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "gif": "variants/corrupted/activities/gifs/fishing.gif"
+      },
+      "combat": {
+        "row": 3,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/corrupted/activities/gifs/combat.gif"
+      },
+      "banking": {
+        "row": 4,
+        "frames": 6,
+        "fps": 7,
+        "loop": true,
+        "gif": "variants/corrupted/activities/gifs/banking.gif"
+      }
+    },
+    "fallback": "activityMap"
+  }
 }

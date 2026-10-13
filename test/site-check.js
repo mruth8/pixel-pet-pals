@@ -25,7 +25,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
     if (d.method === "Network.responseReceived" && d.params.response.status >= 400) fail(d.params.response.status + " " + d.params.response.url);
     if (d.method === "Runtime.exceptionThrown") fail("exception " + d.params.exceptionDetails.text); };
   const call = (method, params = {}) => new Promise(r => { pend[++id] = r; ws.send(JSON.stringify({ id, method, params })); });
-  await call("Network.enable"); await call("Runtime.enable");
+  await call("Network.enable"); await call("Network.setCacheDisabled", { cacheDisabled: true }); await call("Runtime.enable");
   for (const [vw, slash] of [[1100, true], [1100, false], [390, true], [390, false]]) {
     const tag = `${vw}px ${slash ? "slash" : "no-slash"}`; console.log("--", tag); misses.length = 0;
     await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
@@ -67,7 +67,7 @@ const sl = ms => new Promise(r => setTimeout(r, ms)); let bad = 0; const fail = 
     const m = await call("Page.getLayoutMetrics"); const h = Math.ceil(m.cssContentSize.height);
     const s = await call("Page.captureScreenshot", { captureBeyondViewport: true, clip: { x: 0, y: 0, width: vw, height: h, scale: 1 } });
     fs.mkdirSync(OUT, { recursive: true });
-    const name = `v4-site-${vw}${slash ? "" : "-noslash"}.png`;
+    const name = `v5-site-${vw}${slash ? "" : "-noslash"}.png`;
     fs.writeFileSync(path.join(OUT, name), Buffer.from(s.data, "base64")); console.log("  screenshot -> screenshots/" + name);
   }
   ch.kill(); srv.close(); console.log(bad ? `FAIL (${bad})` : "PASS: site check"); process.exit(bad ? 1 : 0);

@@ -1,6 +1,6 @@
 // Headless-Chrome check (google-chrome, Node >=20.10): node --experimental-websocket test/browser-check.js
 // Every pack (and variant) in overlay + compact, at 1100px and 390px, via /widget/ and /widget (no slash).
-// Asserts facing, variant, no sprite cropping, status/legal text fully visible. Screenshots -> screenshots/v4-*.png
+// Asserts facing, variant, no sprite cropping, status/legal text fully visible. Screenshots -> screenshots/v5-*.png
 const { spawn } = require("child_process"), fs = require("fs"), path = require("path");
 const ROOT = path.join(__dirname, ".."), OUT = path.join(ROOT, "screenshots"), PORT = +process.env.BROWSER_PORT || 18899, BASE = `http://127.0.0.1:${PORT}`;
 fs.mkdirSync(OUT, { recursive: true });
@@ -19,7 +19,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
     if (d.method === "Network.responseReceived" && d.params.response.status >= 400) fail(d.params.response.status + " " + d.params.response.url); };
   const call = (method, params = {}) => new Promise((r, j) => { const i = ++id; const to = setTimeout(() => j(new Error("CDP timeout " + method)), 20000); pend[i] = v => { clearTimeout(to); r(v); }; ws.send(JSON.stringify({ id: i, method, params })); });
   const ev = async x => (await call("Runtime.evaluate", { expression: x, returnByValue: true, awaitPromise: true })).result.value;
-  await call("Runtime.enable"); await call("Network.enable");
+  await call("Runtime.enable"); await call("Network.enable"); await call("Network.setCacheDisabled", { cacheDisabled: true });
   const cases = [];
   for (const id of PACKS) {
     const m = JSON.parse(fs.readFileSync(path.join(ROOT, "packs", id, "manifest.json")));
@@ -53,16 +53,51 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
     await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
     for (const c of cases) for (const size of ["", "compact"]) {
       const q = `?bg=1&pet=${c.id}${c.v ? "&variant=" + c.v : ""}${size ? "&size=compact" : ""}`;
-      const shot = vw === 1100 && slash ? `v4-widget-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png` : null;
+      const shot = vw === 1100 && slash ? `v5-widget-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png` : null;
       await check(tag, `${BASE}/widget${slash ? "/" : ""}${q}`, c, shot);
     }
     console.log(`${tag}: ${cases.length * 2} widgets ${bad === before ? "ok" : "FAILED"}`);
+  }
+  // v0.5 activities, driven by the mock sender (--only): correct activities sheet per pet/variant, fallback, no edge clipping.
+  const mock = act => new Promise(r => spawn("node", ["mock-sender/send.js", "--url", `${BASE}/events`, "--only", act], { cwd: ROOT }).on("exit", r));
+  const { resolveActivities, pickActivity } = require("../shared/pack");
+  let actRenders = 0; const beforeAct = bad;
+  for (const act of (process.env.SKIP_ACT ? [] : ["woodcutting", "mining", "fishing", "combat", "banking", "fallback"])) {
+    if (act === "fallback") await post({ type: "activity", activity: { category: "bossing", target: "Vorkath" } }); else await mock(act);
+    for (const c of cases) for (const [vw, size] of [[1100, ""], [390, "compact"]]) {
+      await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
+      const m = JSON.parse(fs.readFileSync(path.join(ROOT, "packs", c.id, "manifest.json")));
+      const acts = resolveActivities(m, c.v || undefined);
+      const want = act === "fallback" ? pickActivity(m, acts, { category: "bossing" }) : { source: "activities", key: act };
+      const url = `${BASE}/widget/?bg=1&pet=${c.id}${c.v ? "&variant=" + c.v : ""}${size ? "&size=compact" : ""}`;
+      await call("Page.navigate", { url });
+      for (let i = 0; i < 100; i++) { await sl(50); if (await ev(`location.href===${JSON.stringify(url)}&&document.readyState==="complete"&&(document.getElementById("pet").dataset.anim||"").length>0&&document.getElementById("player").textContent!=="…"`)) break; }
+      await sl(120);
+      const s = await ev(`(async()=>{const $=i=>document.getElementById(i),p=$("pet"),st=document.querySelector(".stage"),R=e=>e.getBoundingClientRect();
+        const u=getComputedStyle(p).backgroundImage.slice(5,-2);const im=new Image();im.src=u;await Promise.race([im.decode().catch(()=>{}),new Promise(r=>setTimeout(r,2000))]);
+        const pr=R(p),sr=R(st),cl=st.clientLeft,ct=st.clientTop,inner={l:sr.left+cl,t:sr.top+ct,r:sr.left+cl+st.clientWidth,b:sr.top+ct+st.clientHeight},c=R($("w")),lg=R($("note"));
+        return {anim:p.dataset.anim,sheet:p.dataset.sheet,img:u.replace(location.origin,""),flip:p.classList.contains("flip"),
+          gapL:pr.left-inner.l,gapR:inner.r-pr.right,top:pr.top-inner.t,bottom:inner.b-pr.bottom,loaded:im.naturalWidth>0,legalIn:lg.bottom<=c.bottom-2,w:c.width,h:c.height}})()`);
+      actRenders++; n++;
+      const tag = `act ${act} ${c.id}${c.v ? "/" + c.v : ""}${size ? " compact" : ""}`;
+      if (want.source === "activities") {
+        if (s.anim !== "act:" + act || s.sheet !== "activities") fail(`${tag} wrong anim ${s.anim}/${s.sheet}`);
+        if (!s.img.endsWith(`/packs/${c.id}/${acts.sheet}`)) fail(`${tag} wrong sheet ${s.img} want ${acts.sheet}`);
+      } else if (s.anim !== want.key || s.sheet !== "base") fail(`${tag} fallback ${s.anim}/${s.sheet} want ${want.key}/base`);
+      if (!s.loaded) fail(`${tag} sheet not loaded`);
+      if (s.gapL < 1 || s.gapR < 1 || s.top < -0.5 || s.bottom < -0.5) fail(`${tag} edge clipping L${s.gapL} R${s.gapR} T${s.top} B${s.bottom}`);
+      if (s.flip !== (c.facing === "left")) fail(`${tag} facing`);
+      if (!s.legalIn) fail(`${tag} legal clipped`);
+      if (!size || act === "fishing") { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: Math.ceil(s.w) + 14, height: Math.ceil(s.h) + 14, scale: 2 } });
+        fs.writeFileSync(path.join(OUT, `v5-act-${act}-${c.id}${c.v ? "-" + c.v : ""}${size ? "-compact" : ""}.png`), Buffer.from(r.data, "base64")); }
+    }
+    console.log(`activities ${act}: ${cases.length * 2} renders ${bad === beforeAct ? "ok" : "FAILED"}`);
   }
   // Celebrate (level_up): sprite must stay inside the stage, incl. tall pets.
   await call("Emulation.setDeviceMetricsOverride", { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false });
   await post({ type: "level_up", detail: { skill: "Woodcutting", level: 71 } });
   for (const c of cases.filter(c => ["olmlet", "butch", "heron", "baby-chinchompa"].includes(c.id) && (!c.v || c.v === c.def)))
-    for (const size of ["", "&size=compact"]) await check("celebrate", `${BASE}/widget/?bg=1&pet=${c.id}${size}`, c, `v4-widget-${c.id}-celebrate${size ? "-compact" : ""}.png`);
+    for (const size of ["", "&size=compact"]) await check("celebrate", `${BASE}/widget/?bg=1&pet=${c.id}${size}`, c, `v5-widget-${c.id}-celebrate${size ? "-compact" : ""}.png`);
   // QC (PR #5): compact status is one line; a long status ellipsizes and never pushes the trademark line out;
   // "Logged out · sleeping · 2h" stays in full; tall pets are upscaled ~1.6x crisply and not cropped.
   await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 900, deviceScaleFactor: 1, mobile: true });
@@ -90,7 +125,7 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
       if (["olmlet", "butch"].includes(pid) && (Math.abs(q.petH - 64) > 1 || Math.abs(+q.s - 1.6) > 0.01)) fail(`${tag} tall pet not ~1.6x: h=${q.petH} s=${q.s}`);
       if (process.env.VERBOSE) console.log(tag, JSON.stringify(q));
       if (label !== "loot") { const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 260, height: 100, scale: 3 } });
-        fs.writeFileSync(path.join(OUT, `v4-compact-${label}-${pid}@3x.png`), Buffer.from(r.data, "base64")); }
+        fs.writeFileSync(path.join(OUT, `v5-compact-${label}-${pid}@3x.png`), Buffer.from(r.data, "base64")); }
     }
   }
   // Compact logged-out card text in full (tall pet).
@@ -100,6 +135,6 @@ const post = ev => fetch(`${BASE}/events`, { method: "POST", body: JSON.stringif
   const lo = await ev(`document.getElementById("statusline").textContent.replace(/\\s+/g," ").trim()`);
   if (!/Logged out · sleeping ?· 2h/.test(lo)) fail("compact logout text: " + lo);
   const r = await call("Page.captureScreenshot", { clip: { x: 0, y: 0, width: 260, height: 100, scale: 2 } });
-  fs.writeFileSync(path.join(OUT, "v4-widget-compact-logged-out-olmlet.png"), Buffer.from(r.data, "base64"));
+  fs.writeFileSync(path.join(OUT, "v5-widget-compact-logged-out-olmlet.png"), Buffer.from(r.data, "base64"));
   ch.kill(); relay.kill(); console.log(bad ? `FAIL (${bad})` : `PASS: browser check (${n} widget renders, ${cases.length} pet/variant cases)`); process.exit(bad ? 1 : 0);
 })();

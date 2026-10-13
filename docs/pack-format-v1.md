@@ -22,3 +22,17 @@ Shipped (12 pets + dev placeholder):
 - `placeholder-blob` (dev).
 
 `packs/packs.js` is the designer's file:// mockup bundle (all manifests inlined); the widget and relay don't use it.
+
+## Activities (optional, v0.5.0, additive)
+Packs may add an `activities` block, at the top level and/or per variant (`variants[].activities`; the variant's own block wins). Manifests without it stay valid and behave as before.
+
+```json
+"activities": { "sheet": "activities/activities.png", "frameWidth": 32, "frameHeight": 32, "layout": "row-per-activity",
+  "gearTier": "rune", "propSide": "left", "paletteColors": 15, "fallback": "activityMap",
+  "map": { "woodcutting": {"row":0,"frames":6,"fps":8,"loop":true}, "mining": {...}, "fishing": {...}, "combat": {...}, "banking": {...} } }
+```
+- `frameWidth`/`frameHeight` must match `sheet` (32x40 packs have 32x40 activity frames). Grid: `columns` = max frames, `rows` = max row + 1 (overridable).
+- `paletteColors` counts **prop colours only**: colours in the activities sheet that aren't in the pet's own sheet for that variant. Max 16. `test/packs.js` recounts it from the PNGs.
+- `gearTier` `rune`|`dragon` (Youngllef crystal uses dragon), `propSide` `left`|`right`, and the optional `gif` per map entry are informational.
+- **Widget fallback:** for an `activity` event, `activities.map[activity.skill (lower-cased) || activity.category]` plays from the activities sheet, else `activityMap[activity.category]` with the base animations, else `default`. Other events still use `eventMap`.
+  - Example: `{category:"skilling", skill:"Woodcutting"}` → woodcutting; `{category:"combat"}` → combat; `{category:"banking"}` → banking; `{category:"bossing"}` or `{skill:"Cooking"}` → activityMap.

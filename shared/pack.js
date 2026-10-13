@@ -15,7 +15,44 @@
       else for (const v of m.variants) if (!v.id || !v.sheet) e.push("variant needs id and sheet");
       if (m.defaultVariant && !(m.variants || []).some(v => v.id === m.defaultVariant)) e.push("defaultVariant not in variants");
     }
+    // Optional `activities` blocks (v0.5.0): top level and/or per variant. paletteColors counts PROP colours only (<=16).
+    const blocks = [["activities", m.activities]].concat((m.variants || []).map(v => ["variants." + v.id + ".activities", v.activities]));
+    for (const [where, a] of blocks) if (a !== undefined) for (const x of validateActivities(a, s)) e.push(where + ": " + x);
     return e;
+  }
+  function activitiesGrid(a) {
+    const vals = Object.values(a.map || {});
+    return { columns: a.columns || Math.max(1, ...vals.map(x => x.frames)), rows: a.rows || Math.max(1, ...vals.map(x => x.row + 1)) };
+  }
+  function validateActivities(a, sheet) {
+    const e = [];
+    if (!a || typeof a !== "object") return ["must be an object"];
+    if (typeof a.sheet !== "string") e.push("sheet required");
+    if (a.frameWidth !== undefined && a.frameWidth !== sheet.frameWidth) e.push("frameWidth must match sheet.frameWidth");
+    if (a.frameHeight !== undefined && a.frameHeight !== sheet.frameHeight) e.push("frameHeight must match sheet.frameHeight");
+    if (a.paletteColors !== undefined && !(Number.isInteger(a.paletteColors) && a.paletteColors >= 0 && a.paletteColors <= 16)) e.push("paletteColors (prop colours only) must be an integer 0-16");
+    if (a.layout !== undefined && a.layout !== "row-per-activity") e.push("layout must be row-per-activity");
+    if (a.fallback !== undefined && a.fallback !== "activityMap") e.push("fallback must be activityMap");
+    if (a.gearTier !== undefined && !["rune", "dragon"].includes(a.gearTier)) e.push("gearTier must be rune|dragon");
+    if (!a.map || typeof a.map !== "object" || !Object.keys(a.map).length) e.push("map required");
+    else for (const [k, x] of Object.entries(a.map)) {
+      if (k !== k.toLowerCase()) e.push("map key " + k + " must be lowercase");
+      if (!Number.isInteger(x.row) || !Number.isInteger(x.frames) || !(x.fps > 0)) e.push("map." + k + " needs row, frames, fps");
+    }
+    return e;
+  }
+  // Activities block for the chosen variant (variant's own, else top level).
+  function resolveActivities(m, variant) {
+    const vs = m.variants || [];
+    const v = vs.find(x => x.id === variant) || vs.find(x => x.id === m.defaultVariant);
+    return (v && v.activities) || m.activities || null;
+  }
+  // Fallback chain: activities.map[skill || category] -> activityMap[category] -> default.
+  function pickActivity(m, acts, activity) {
+    const keys = [activity && activity.skill, activity && activity.category].filter(Boolean).map(k => String(k).toLowerCase());
+    for (const k of keys) if (acts && acts.map && acts.map[k]) return { source: "activities", key: k, anim: acts.map[k] };
+    const name = (m.activityMap && activity && m.activityMap[activity.category]) || m.default || "idle";
+    return { source: "base", key: m.animations[name] ? name : (m.default || "idle") };
   }
   // Requested variant -> manifest default -> sheet.file.
   function resolveSheet(m, variant) {
@@ -28,6 +65,6 @@
   function needsFlip(m, textSide = "right") { const f = m.facing || "right"; return f !== "front" && f !== textSide; }
   // Largest integer scale that fits the stage; taller frames (e.g. 32x40) drop a step so nothing is cropped.
   function fitScale(m, maxK, stageW, stageH) { let k = maxK; while (k > 1 && (m.sheet.frameWidth * k > stageW || m.sheet.frameHeight * k > stageH)) k--; return k; }
-  const api = { validatePack, resolveSheet, needsFlip, fitScale };
+  const api = { validatePack, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale };
   if (typeof module !== "undefined") module.exports = api; else root.PPPPack = api;
 })(this);

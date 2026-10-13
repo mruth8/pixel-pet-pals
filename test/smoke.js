@@ -10,7 +10,7 @@ setTimeout(async () => {
   if (bad.status !== 422) fail("invalid event not rejected");
   const s = spawn("node", ["mock-sender/send.js", "--url", `http://localhost:${PORT}/events`, "--interval", "50", "--once"], { cwd: root });
   s.on("exit", () => setTimeout(() => {
-    if (got.length !== 10) fail("expected 10 events, got " + got.length);
+    if (got.length !== 13) fail("expected 13 events, got " + got.length);
     console.log("PASS: relay accepted & streamed", got.map(e => e.type).join(",")); relay.kill();
   }, 200));
 }, 400);

@@ -20,8 +20,23 @@
   el.classList.toggle("flip", PPPPack.needsFlip(m));
   el.dataset.pet = m.id; el.dataset.variant = variant || ""; el.dataset.facing = m.facing || "right";
   let timer, reset, since = null;
+  const acts = PPPPack.resolveActivities(m, variant), actGrid = acts && PPPPack.activitiesGrid(acts);
+  const baseSheet = { img: `url(${PACKS}/${PET}/${file})`, size: `${m.sheet.columns * fw * K}px ${m.sheet.rows * fh * K}px` };
+  const actSheet = acts && { img: `url(${PACKS}/${PET}/${acts.sheet})`, size: `${actGrid.columns * fw * K}px ${actGrid.rows * fh * K}px` };
+  if (acts) new Image().src = `${PACKS}/${PET}/${acts.sheet}`;  // preload
+  function useSheet(sh, kind) { if (el.dataset.sheet !== kind) { el.style.backgroundImage = sh.img; el.style.backgroundSize = sh.size; el.dataset.sheet = kind; } }
+  // Activity animation from the activities sheet (fallback handled by PPPPack.pickActivity).
+  function playActivity(activity) {
+    const pick = PPPPack.pickActivity(m, acts, activity);
+    if (pick.source !== "activities") return play(pick.key);
+    useSheet(actSheet, "activities"); runFrames(pick.anim, "act:" + pick.key);
+  }
   function play(name) {
-    const a = m.animations[name] ? name : (m.default || "idle"), A = m.animations[a]; el.dataset.anim = a;
+    useSheet(baseSheet, "base");
+    const a = m.animations[name] ? name : (m.default || "idle"); runFrames(m.animations[a], a);
+  }
+  function runFrames(A, label) {
+    el.dataset.anim = label;
     let f = 0; clearInterval(timer);
     const draw = () => el.style.backgroundPosition = `-${f * fw * K}px -${A.row * fh * K}px`;
     draw(); timer = setInterval(() => { f = A.loop === false ? Math.min(f + 1, A.frames - 1) : (f + 1) % A.frames; draw(); }, 1000 / A.fps);
@@ -41,9 +56,10 @@
     card.classList.toggle("off", e.type === "logout");
     clearTimeout(reset); card.classList.remove("party");
     const celebrate = e.type === "level_up" || e.type === "pet_drop" || (e.type === "loot" && e.detail?.rare);
-    const anim = e.type === "activity" ? (m.activityMap?.[e.activity?.category] || m.default) : (m.eventMap?.[e.type] || m.default);
+    const anim = e.type === "activity" ? null : (m.eventMap?.[e.type] || m.default);
     if (celebrate) { void card.offsetWidth; card.classList.add("party"); card.querySelector(".badge").textContent = e.type === "pet_drop" ? "PET!" : e.type === "loot" ? "LOOT" : "LEVEL UP";
       play("celebrate"); reset = setTimeout(() => { card.classList.remove("party"); play("happy"); }, 3000); }
+    else if (e.type === "activity") playActivity(e.activity);
     else play(anim);
   }
   window.__petOnEvent = onEvent;

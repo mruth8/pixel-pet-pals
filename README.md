@@ -6,7 +6,7 @@ Milestone 1: event format v1, mock sender, placeholder widget with one pet (from
 
 ```
 node relay/server.js                 # reference relay + widget on http://127.0.0.1:8787 (loopback only)
-node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once)
+node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once, --only woodcutting|mining|fishing|combat|banking)
 open http://localhost:8787/widget/   # widget; ?pet=<pack id, see docs/pack-format-v1.md> &variant=red &size=compact &player= &stream= &packs=
 npm test                             # pack + relay smoke tests
 node --experimental-websocket test/browser-check.js   # headless Chrome; screenshots -> screenshots/ (gitignored)

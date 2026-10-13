@@ -1,0 +1,48 @@
+{
+  "pet": "phoenix",
+  "variant": null,
+  "tier": "rune",
+  "propSide": "left",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "sheet": "activities.png",
+  "activities": {
+    "woodcutting": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true,
+      "status": "Chopping yew logs"
+    },
+    "mining": {
+      "row": 1,
+      "frames": 5,
+      "fps": 8,
+      "loop": true,
+      "status": "Mining runite ore"
+    },
+    "fishing": {
+      "row": 2,
+      "frames": 6,
+      "fps": 6,
+      "loop": true,
+      "status": "Fishing sharks"
+    },
+    "combat": {
+      "row": 3,
+      "frames": 5,
+      "fps": 8,
+      "loop": true,
+      "status": "Fighting cows"
+    },
+    "banking": {
+      "row": 4,
+      "frames": 6,
+      "fps": 7,
+      "loop": true,
+      "status": "Banking"
+    }
+  },
+  "petColours": 16,
+  "propColours": 14
+}
