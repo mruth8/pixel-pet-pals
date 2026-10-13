@@ -3,40 +3,258 @@
   "$id": "https://pixelpetpals.local/schema/pack-v1.schema.json",
   "title": "Pixel Pet Pals pet pack manifest (pixel-pet-pals/pack@1)",
   "type": "object",
-  "required": ["schema", "id", "name", "sheet", "animations"],
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "sheet",
+    "animations"
+  ],
   "properties": {
-    "schema": { "const": "pixel-pet-pals/pack@1" },
-    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "name": { "type": "string" },
-    "pack": { "type": "string" },
-    "version": { "type": "string" },
-    "license": { "type": "string" },
+    "schema": {
+      "const": "pixel-pet-pals/pack@1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "pack": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
     "sheet": {
       "type": "object",
-      "required": ["file", "frameWidth", "frameHeight", "columns", "rows"],
+      "required": [
+        "file",
+        "frameWidth",
+        "frameHeight",
+        "columns",
+        "rows"
+      ],
       "properties": {
-        "file": { "type": "string" }, "frameWidth": { "type": "integer" }, "frameHeight": { "type": "integer" },
-        "columns": { "type": "integer" }, "rows": { "type": "integer" }, "layout": { "const": "row-per-animation" }
+        "file": {
+          "type": "string"
+        },
+        "frameWidth": {
+          "type": "integer"
+        },
+        "frameHeight": {
+          "type": "integer"
+        },
+        "columns": {
+          "type": "integer"
+        },
+        "rows": {
+          "type": "integer"
+        },
+        "layout": {
+          "const": "row-per-animation"
+        }
       }
     },
-    "anchor": { "type": "object" }, "offset": { "type": "object" }, "scale": { "type": "object" }, "paletteColors": { "type": "integer" },
+    "anchor": {
+      "type": "object"
+    },
+    "offset": {
+      "type": "object"
+    },
+    "scale": {
+      "type": "object"
+    },
+    "paletteColors": {
+      "type": "integer"
+    },
     "animations": {
       "type": "object",
-      "required": ["idle", "walk", "sleep", "happy", "celebrate"],
+      "required": [
+        "idle",
+        "walk",
+        "sleep",
+        "happy",
+        "celebrate"
+      ],
       "additionalProperties": {
-        "type": "object", "required": ["row", "frames", "fps"],
-        "properties": { "row": { "type": "integer" }, "frames": { "type": "integer" }, "fps": { "type": "number" }, "loop": { "type": "boolean" }, "frameFiles": { "type": "array" } }
+        "type": "object",
+        "required": [
+          "row",
+          "frames",
+          "fps"
+        ],
+        "properties": {
+          "row": {
+            "type": "integer"
+          },
+          "frames": {
+            "type": "integer"
+          },
+          "fps": {
+            "type": "number"
+          },
+          "loop": {
+            "type": "boolean"
+          },
+          "frameFiles": {
+            "type": "array"
+          }
+        }
       }
     },
-    "activityMap": { "type": "object", "additionalProperties": { "type": "string" } },
-    "eventMap": { "type": "object", "additionalProperties": { "type": "string" } },
-    "default": { "type": "string" },
-    "facing": { "enum": ["left", "right", "front"], "default": "right", "description": "Optional. Direction the art faces; left is mirrored so the pet faces the text, front is never mirrored." },
-    "variants": {
-      "type": "array", "description": "Optional colourways sharing the same layout/animations.",
-      "items": { "type": "object", "required": ["id", "sheet"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "sheet": { "type": "string" }, "paletteColors": { "type": "integer" } } }
+    "activityMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
-    "defaultVariant": { "type": "string", "description": "Optional. Variant used when none is requested; its sheet is sheet.file." },
-    "plannedVariants": { "type": "array" }
+    "eventMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "default": {
+      "type": "string"
+    },
+    "facing": {
+      "enum": [
+        "left",
+        "right",
+        "front"
+      ],
+      "default": "right",
+      "description": "Optional. Direction the art faces; left is mirrored so the pet faces the text, front is never mirrored."
+    },
+    "variants": {
+      "type": "array",
+      "description": "Optional colourways sharing the same layout/animations.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "sheet"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sheet": {
+            "type": "string"
+          },
+          "paletteColors": {
+            "type": "integer"
+          },
+          "activities": {
+            "$ref": "#/$defs/activities"
+          }
+        }
+      }
+    },
+    "defaultVariant": {
+      "type": "string",
+      "description": "Optional. Variant used when none is requested; its sheet is sheet.file."
+    },
+    "plannedVariants": {
+      "type": "array"
+    },
+    "activities": {
+      "$ref": "#/$defs/activities"
+    }
+  },
+  "$defs": {
+    "activities": {
+      "type": "object",
+      "description": "Optional (v0.5.0). Activity animations on a separate sheet. Widget fallback: activities.map[skill||category] -> activityMap[category] -> default.",
+      "required": [
+        "sheet",
+        "map"
+      ],
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "frameWidth": {
+          "type": "integer",
+          "description": "Must equal sheet.frameWidth"
+        },
+        "frameHeight": {
+          "type": "integer",
+          "description": "Must equal sheet.frameHeight"
+        },
+        "columns": {
+          "type": "integer",
+          "description": "Optional; default = max frames"
+        },
+        "rows": {
+          "type": "integer",
+          "description": "Optional; default = max row + 1"
+        },
+        "layout": {
+          "const": "row-per-activity"
+        },
+        "gearTier": {
+          "enum": [
+            "rune",
+            "dragon"
+          ]
+        },
+        "propSide": {
+          "enum": [
+            "left",
+            "right"
+          ]
+        },
+        "paletteColors": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16,
+          "description": "PROP colours only (colours not in the pet's own sheet)."
+        },
+        "fallback": {
+          "const": "activityMap"
+        },
+        "map": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[a-z_]+$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "row",
+              "frames",
+              "fps"
+            ],
+            "properties": {
+              "row": {
+                "type": "integer"
+              },
+              "frames": {
+                "type": "integer"
+              },
+              "fps": {
+                "type": "number"
+              },
+              "loop": {
+                "type": "boolean"
+              },
+              "gif": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

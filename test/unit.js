@@ -8,11 +8,12 @@ assert.strictEqual(statusText(ev("quest", { detail: { name: "Dragon Slayer I" } 
 assert.ok(!/:\s*$/.test(statusText(ev("quest"))), "no dangling colon");
 console.log("PASS: status text");
 // Relay binds loopback by default; HOST opt-in binds wider.
-const PORT = +process.env.UNIT_PORT || 18788, root = path.join(__dirname, "..");
+const H = require("./harness"); let PORT; const root = path.join(__dirname, "..");
 const lan = Object.values(os.networkInterfaces()).flat().find(i => i && i.family === "IPv4" && !i.internal);
 const tryConnect = host => new Promise(r => { const s = net.connect(PORT, host); s.on("connect", () => { s.destroy(); r(true); }); s.on("error", () => r(false)); });
 const sl = ms => new Promise(r => setTimeout(r, ms));
 (async () => {
+  PORT = await H.port("UNIT_PORT");
   for (const [env, wantLan] of [[{}, false], [{ PET_HOST: "0.0.0.0" }, true]]) {
     const p = spawn("node", ["relay/server.js"], { cwd: root, env: { ...process.env, PET_HOST: "", ...env, PORT } }); await sl(500);
     assert.ok(await tryConnect("127.0.0.1"), "loopback reachable");

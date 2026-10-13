@@ -6,7 +6,7 @@ Milestone 1: event format v1, mock sender, placeholder widget with one pet (from
 
 ```
 node relay/server.js                 # reference relay + widget on http://127.0.0.1:8787 (loopback only)
-node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once)
+node mock-sender/send.js             # emits sample events (--url, --interval, --secret, --player, --once, --only woodcutting|mining|fishing|combat|banking)
 open http://localhost:8787/widget/   # widget; ?pet=<pack id, see docs/pack-format-v1.md> &variant=red &size=compact &player= &stream= &packs=
 npm test                             # pack + relay smoke tests
 node --experimental-websocket test/browser-check.js   # headless Chrome; screenshots -> screenshots/ (gitignored)
@@ -27,3 +27,7 @@ The relay binds to **127.0.0.1 only** by default, so it's unreachable from your 
 
 ## Progress page
 `site/` is a self-contained static page (relative paths only, resolved via `<base href="/matthew/pixel-pet-pals/">` so the URL works with or without a trailing slash; change that one line to host elsewhere) for mrruth.com/matthew/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
+
+### Tests & site sync
+- `scripts/sync-site.sh` re-copies widget/shared/packs into `site/` (activity GIFs, previews and activities.json are excluded; `test/site-sync.js` enforces this).
+- Test ports come from env, else a free port: `BROWSER_PORT`, `SITE_PORT`, `SMOKE_PORT`, `UNIT_PORT`, `CHROME_DEBUG_PORT`. Tests always kill the Chrome they start (exit/signal handlers in `test/harness.js`).

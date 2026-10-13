@@ -3,7 +3,7 @@
   "id": "baby-chinchompa",
   "name": "Baby Chinchompa",
   "pack": "A-osrs-style",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "license": "LICENSE.md",
   "sheet": {
     "file": "variants/grey/sheet.png",
@@ -121,25 +121,260 @@
       "id": "grey",
       "name": "Grey",
       "sheet": "variants/grey/sheet.png",
-      "paletteColors": 16
+      "paletteColors": 16,
+      "activities": {
+        "sheet": "variants/grey/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "rune",
+        "propSide": "right",
+        "paletteColors": 15,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/grey/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/grey/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/grey/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/grey/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/grey/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     },
     {
       "id": "red",
       "name": "Red",
       "sheet": "variants/red/sheet.png",
-      "paletteColors": 16
+      "paletteColors": 16,
+      "activities": {
+        "sheet": "variants/red/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "rune",
+        "propSide": "right",
+        "paletteColors": 15,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/red/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/red/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/red/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/red/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/red/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     },
     {
       "id": "black",
       "name": "Black",
       "sheet": "variants/black/sheet.png",
-      "paletteColors": 16
+      "paletteColors": 16,
+      "activities": {
+        "sheet": "variants/black/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "rune",
+        "propSide": "right",
+        "paletteColors": 15,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/black/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/black/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/black/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/black/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/black/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     },
     {
       "id": "gold",
       "name": "Gold",
       "sheet": "variants/gold/sheet.png",
-      "paletteColors": 16
+      "paletteColors": 16,
+      "activities": {
+        "sheet": "variants/gold/activities/activities.png",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "layout": "row-per-activity",
+        "gearTier": "rune",
+        "propSide": "right",
+        "paletteColors": 15,
+        "map": {
+          "woodcutting": {
+            "row": 0,
+            "frames": 6,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/gold/activities/gifs/woodcutting.gif"
+          },
+          "mining": {
+            "row": 1,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/gold/activities/gifs/mining.gif"
+          },
+          "fishing": {
+            "row": 2,
+            "frames": 6,
+            "fps": 6,
+            "loop": true,
+            "gif": "variants/gold/activities/gifs/fishing.gif"
+          },
+          "combat": {
+            "row": 3,
+            "frames": 5,
+            "fps": 8,
+            "loop": true,
+            "gif": "variants/gold/activities/gifs/combat.gif"
+          },
+          "banking": {
+            "row": 4,
+            "frames": 6,
+            "fps": 7,
+            "loop": true,
+            "gif": "variants/gold/activities/gifs/banking.gif"
+          }
+        },
+        "fallback": "activityMap"
+      }
     }
-  ]
+  ],
+  "activities": {
+    "sheet": "variants/grey/activities/activities.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "layout": "row-per-activity",
+    "gearTier": "rune",
+    "propSide": "right",
+    "paletteColors": 15,
+    "map": {
+      "woodcutting": {
+        "row": 0,
+        "frames": 6,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/grey/activities/gifs/woodcutting.gif"
+      },
+      "mining": {
+        "row": 1,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/grey/activities/gifs/mining.gif"
+      },
+      "fishing": {
+        "row": 2,
+        "frames": 6,
+        "fps": 6,
+        "loop": true,
+        "gif": "variants/grey/activities/gifs/fishing.gif"
+      },
+      "combat": {
+        "row": 3,
+        "frames": 5,
+        "fps": 8,
+        "loop": true,
+        "gif": "variants/grey/activities/gifs/combat.gif"
+      },
+      "banking": {
+        "row": 4,
+        "frames": 6,
+        "fps": 7,
+        "loop": true,
+        "gif": "variants/grey/activities/gifs/banking.gif"
+      }
+    },
+    "fallback": "activityMap"
+  }
 }

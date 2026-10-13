@@ -5,9 +5,14 @@
 body { margin:0; padding:6px; font-family:"PixelifySans", monospace; color:var(--ink); background:transparent; }
 body.bg { background:#f6ecdc; }
 .ppp { position:relative; display:flex; align-items:center; gap:12px; width:360px; height:120px;
-  padding:10px 14px 10px 10px; background:var(--card); border:3px solid var(--ink); border-radius:6px;
+  padding:9px 14px 9px 10px; background:var(--card); border:3px solid var(--ink); border-radius:6px;
   box-shadow:4px 4px 0 rgba(43,30,38,.35); overflow:hidden; }
-.ppp .stage { position:relative; flex:0 0 100px; height:100px; background:linear-gradient(#e8f4ec 0 70%, #cfe6d6 70%);
+/* Edge-clipping fix (designer's activities README: stage clips to its inside, overflow:hidden). Activity art uses all
+   32 source columns (Mole's chest at x=0, Phoenix's tail/water at x=31), so the stage is 4px wider than the frame:
+   the pet is centred with a 2px gap to each side of the 2px border, and nothing touches or sits under the border
+   or its rounded corners. It is also 2px taller than the frame (pet sits on the floor), so art at the
+   top row (canopies, celebrate sparkles) keeps a 2px gap below the top border. The designer's left:-4px nudge targets the mockup's left-anchored pet; ours is centred. */
+.ppp .stage { position:relative; flex:0 0 104px; height:102px; background:linear-gradient(#e8f4ec 0 70%, #cfe6d6 70%);
   border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
 /* --s: extra crisp (nearest-neighbour) upscale, 1 by default; used for tall pets in the compact card. Scales from the feet. */
 .ppp .pet { --s:1; position:absolute; left:50%; bottom:0; image-rendering:pixelated; background-repeat:no-repeat;
@@ -27,8 +32,8 @@ body.bg { background:#f6ecdc; }
 .ppp.party .badge { display:block; }
 /* Compact 240x80: status is ONE line. The activity text ellipsizes and "· 2h" never shrinks, so the footer (with the trademark line)
    always fits. "Logged out · sleeping · 2h" fits in full (asserted by test/browser-check.js). */
-.ppp.compact { width:240px; height:80px; gap:8px; padding:5px 6px 5px 5px; }
-.ppp.compact .stage { flex-basis:68px; height:68px; }
+.ppp.compact { width:240px; height:80px; gap:6px; padding:5px 4px 5px 4px; }
+.ppp.compact .stage { flex-basis:72px; height:70px; }
 .ppp.compact .info { gap:1px; }
 .ppp.compact .name { font-size:14px; }
 .ppp.compact .status { font-size:11px; flex-wrap:nowrap; white-space:nowrap; min-width:0; }
