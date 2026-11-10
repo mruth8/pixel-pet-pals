@@ -1,9 +1,9 @@
-// Serves site/ ALONE under /matthew/pixel-pet-pals/ and checks it in headless Chrome:
+// Serves site/ ALONE under /matthew/osrs/pixel-pet-pals/ and checks it in headless Chrome:
 // no 404s, pets face the text, compact status not clipped. Screenshot -> screenshots/site.png
 // Runs at 1100px and 390px, with and without the trailing slash (server has no DirectorySlash redirect).
 // node --experimental-websocket test/site-check.js
 const http = require("http"), fs = require("fs"), path = require("path"), { spawn } = require("child_process");
-const SITE = path.join(__dirname, "..", "site"), PREFIX = "/matthew/pixel-pet-pals/", OUT = path.join(__dirname, "..", "screenshots");
+const SITE = path.join(__dirname, "..", "site"), PREFIX = "/matthew/osrs/pixel-pet-pals/", OUT = path.join(__dirname, "..", "screenshots");
 const MIME = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".png": "image/png", ".gif": "image/gif", ".svg": "image/svg+xml", ".ttf": "font/ttf" };
 const H = require("./harness"); let PORT;  // SITE_PORT or a free port
 const misses = [];
