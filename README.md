@@ -10,7 +10,7 @@ node mock-sender/send.js             # emits sample events (--url, --interval, -
 open http://localhost:8787/widget/   # widget; ?pet=<pack id, see docs/pack-format-v1.md> &variant=red &size=compact &player= &stream= &packs=
 npm test                             # pack + relay smoke tests
 node --experimental-websocket test/browser-check.js   # headless Chrome; screenshots -> screenshots/ (gitignored)
-node --experimental-websocket test/site-check.js      # serves site/ alone at /matthew/pixel-pet-pals/; screenshots/site.png
+node --experimental-websocket test/site-check.js      # serves site/ alone at /matthew/osrs/pixel-pet-pals/; screenshots/site.png
 ```
 Optional shared secret: `PET_SECRET=s node relay/server.js` + `--secret s` on the sender (header `X-Pet-Secret`).
 
@@ -26,7 +26,7 @@ Layout: `docs/event-format-v1.md`, `schema/` (JSON Schema + TS types), `shared/v
 The relay binds to **127.0.0.1 only** by default, so it's unreachable from your LAN. To expose it (e.g. OBS on another PC, or a server), opt in with `PET_HOST=0.0.0.0 node relay/server.js` (or `--host 0.0.0.0`) and set `PET_SECRET` so only your plugin can post events. Note: `/state` and `/stream` stay readable without the secret.
 
 ## Progress page
-`site/` is a self-contained static page (relative paths only, resolved via `<base href="/matthew/pixel-pet-pals/">` so the URL works with or without a trailing slash; change that one line to host elsewhere) for mrruth.com/matthew/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
+`site/` is a self-contained static page (relative paths only, resolved via `<base href="/matthew/osrs/pixel-pet-pals/">` so the URL works with or without a trailing slash; change that one line to host elsewhere) for mrruth.com/matthew/osrs/pixel-pet-pals/. It embeds live widget demos via `site/widget.html?packs=packs&pet=...&demo=<type|category>&ago=<min>`. Packs and widget assets are copied in, so re-copy them after changing `packs/` or `widget/`.
 
 ### Tests & site sync
 - `scripts/sync-site.sh` re-copies widget/shared/packs into `site/`. Activity GIFs, previews and activities.json are excluded, and refs to unshipped files (e.g. `activities.map.*.gif`) are stripped from the manifest copies by `scripts/site-manifest-refs.js`. `test/site-sync.js` enforces both and fails if any `site/` manifest references a missing file.

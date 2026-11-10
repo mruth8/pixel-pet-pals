@@ -1,21 +1,31 @@
 # Manual-only FTP deploy of the static site/ folder to
-# public_html/matthew/pixel-pet-pals/ (https://mrruth.com/matthew/pixel-pet-pals/).
+# public_html/matthew/osrs/pixel-pet-pals/ (https://mrruth.com/matthew/osrs/pixel-pet-pals/).
 # Only the contents of site/ at an explicitly chosen ref are uploaded. Never runs
 # on push/PR/schedule. See docs/DEPLOY-ACTIONS.md.
+#
+# Optional second mode (install_old_path_redirect=true): instead of deploying the site,
+# append a marked 301 block to the OLD folder's pixel-pet-pals/.htaccess so old URLs
+# redirect to the new ones. That file is outside the deploy's server-dir and state file.
 name: Deploy Pixel Pet Pals site (FTP)
 
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Commit SHA (short or full) or tag to deploy. Branch names are refused."
-        required: true
+        description: "Commit SHA (short or full) or tag to deploy. Branch names are refused. Required unless install_old_path_redirect is true."
+        required: false
         type: string
+        default: ""
       dry_run:
         description: "Dry run: only list what would change, upload nothing"
         required: true
         type: boolean
         default: true
+      install_old_path_redirect:
+        description: "Instead of deploying the site, append the old-path 301 block to pixel-pet-pals/.htaccess (respects dry_run; ref is ignored)"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,6 +36,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ !inputs.install_old_path_redirect }}
     name: Deploy ${{ inputs.ref }} (dry_run=${{ inputs.dry_run }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -33,7 +44,7 @@ jobs:
       DEPLOY_REF: ${{ inputs.ref }}
       DRY_RUN: ${{ inputs.dry_run }}
       TREE: _deploy_tree
-      LIVE_URL: https://mrruth.com/matthew/pixel-pet-pals/
+      LIVE_URL: https://mrruth.com/matthew/osrs/pixel-pet-pals/
       BROWSER_UA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
     steps:
       - name: Checkout (full history, so short SHAs and tags resolve)
@@ -47,6 +58,9 @@ jobs:
         run: |
           set -euo pipefail
           ref="$DEPLOY_REF"
+          if [ -z "$ref" ]; then
+            echo "::error::ref is required when install_old_path_redirect is false."; exit 1
+          fi
           if ! printf '%s' "$ref" | grep -Eq '^[A-Za-z0-9._/-]+$'; then
             echo "::error::ref contains unexpected characters: $ref"; exit 1
           fi
@@ -68,7 +82,7 @@ jobs:
             echo "|---|---|"
             echo "| Requested ref | \`$ref\` |"
             echo "| Resolved SHA | \`$sha\` |"
-            echo "| Target | FTP \`pixel-pet-pals/\` ($LIVE_URL) |"
+            echo "| Target | FTP \`osrs/pixel-pet-pals/\` ($LIVE_URL) |"
             echo "| Dry run | \`$DRY_RUN\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -79,7 +93,7 @@ jobs:
           set -euo pipefail
           rm -rf "$TREE"
           mkdir -p "$TREE"
-          # Contents of site/ map 1:1 into pixel-pet-pals/ on the server.
+          # Contents of site/ map 1:1 into osrs/pixel-pet-pals/ on the server.
           git archive --format=tar "$SHA" site/ | tar -x --strip-components=1 -C "$TREE"
           find "$TREE" \( -name '.git' -o -name '.DS_Store' -o -name '*.swp' -o -name '*~' -o -name 'node_modules' \) \
                -prune -exec rm -rf {} +
@@ -122,8 +136,8 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./_deploy_tree/
-          server-dir: pixel-pet-pals/
-          state-name: .ftp-deploy-sync-state-pixel-pet-pals.json
+          server-dir: osrs/pixel-pet-pals/
+          state-name: .ftp-deploy-sync-state-osrs-pixel-pet-pals.json
           dry-run: ${{ inputs.dry_run }}
           log-level: standard
           # Filters the LOCAL tree (second line of defence after the guard).
@@ -172,3 +186,45 @@ jobs:
             echo "::warning::Live index.html: HTTP $code, content $( [ "$want" = "$got" ] && echo matches || echo differs ). Not retrying; check manually."
             echo "- :warning: index.html HTTP $code / differs from the deployed ref" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  old-path-redirect:
+    if: ${{ inputs.install_old_path_redirect }}
+    name: Old-path redirect (dry_run=${{ inputs.dry_run }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DRY_RUN: ${{ inputs.dry_run }}
+      OLD_URL: https://mrruth.com/matthew/pixel-pet-pals/index.html
+      NEW_URL: https://mrruth.com/matthew/osrs/pixel-pet-pals/index.html
+      BROWSER_UA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+    steps:
+      - name: Checkout (only for the helper script)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Append the redirect block to pixel-pet-pals/.htaccess
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Old-path redirect (pixel-pet-pals/.htaccess)"
+            echo ""
+            echo "- Dry run: \`$DRY_RUN\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          bash .github/scripts/install-old-path-redirect.sh
+
+      - name: Check the old URL redirects (real runs only, single attempt)
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -uo pipefail
+          out="$(curl -sS --max-time 20 -A "$BROWSER_UA" -H 'Cache-Control: no-cache' \
+            -o /dev/null -w '%{http_code} %{redirect_url}' "${OLD_URL}?nocache=$GITHUB_RUN_ID")" || out="curl-error"
+          { echo ""; echo "### Redirect check"; echo "- \`$OLD_URL\`: \`$out\`"; } >> "$GITHUB_STEP_SUMMARY"
+          case "$out" in
+            "301 $NEW_URL"*) echo "Old URL returns 301 to the new URL: $out" ;;
+            *) echo "::warning::Expected 301 to $NEW_URL, got: $out. Not retrying; check manually." ;;
+          esac
