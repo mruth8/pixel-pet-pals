@@ -6,6 +6,12 @@ img { image-rendering: pixelated; display:block; max-width:100%; height:auto; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 header.hero { padding: 40px 24px 8px; }
 .crumb { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+.crumb ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; margin: 0; padding: 0; }
+.crumb li { display: inline-flex; align-items: center; color: var(--muted); }
+.crumb li + li::before { content: "/"; content: "/" / ""; margin-right: 8px; color: var(--muted); }
+.crumb a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 2px; }
+.crumb a:hover { text-decoration-thickness: 2px; }
+.crumb [aria-current="page"] { color: var(--muted); }
 h1 { font-size: 56px; line-height: 1; margin: 0 0 14px; letter-spacing: 1px; }
 h2 { font-size: 28px; margin: 44px 0 12px; }
 h3 { font-size: 22px; margin: 8px 0 0; }
