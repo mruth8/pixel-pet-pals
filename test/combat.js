@@ -149,6 +149,37 @@ const sl = ms => new Promise(r => setTimeout(r, ms)), errs = [];
     assert.ok(f >= 1, vw + "px: Olmlet's melee spec plays after switching");
     assert.ok((await ev(state)).over <= 0, vw + "px: no sideways scroll mid-move");
   }
+  // QC M2: every card's combat preview, mid-move, fits inside its card (integer scale picked from the card's width)
+  // and the page never scrolls sideways, across phone, tablet (3-up cards at ~761-950px) and desktop widths.
+  const WIDTHS = [300, 320, 360, 390, 600, 761, 768, 800, 820, 834, 950, 1000, 1280, 1440]; let fits = 0;
+  for (const vw of WIDTHS) {
+    await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
+    await call("Page.navigate", { url: `http://127.0.0.1:${port}${PREFIX}` }); await sl(500);
+    await ev(`new Promise(r=>{const w=()=>document.querySelectorAll("article.pet[data-combat-ready]").length===4&&[...document.querySelectorAll("article.pet[data-combat-ready]")].every(c=>c.dataset.combatReady==="row")?r():setTimeout(w,50);w()})`);
+    const cards = await ev(`[...document.querySelectorAll("article.pet[data-combat-ready=row]")].map(c=>c.dataset.pack)`);
+    assert.deepStrictEqual(cards, ["olmlet", "baby-mole", "baby-chinchompa", "baron"], vw + "px: the three Meet-the-pets cards and the switcher card have combat rows");
+    await ev(`document.querySelectorAll("article.pet[data-combat-ready=row] [data-move=melee-spec]").forEach(b=>b.click())`);
+    await ev(`new Promise(r=>{const w=()=>[...document.querySelectorAll("[data-combat-stage]")].every(s=>+s.dataset.frame>=1)?r():setTimeout(w,30);w()})`);
+    const r = await ev(`(()=>{const vw=document.documentElement.clientWidth;return {sw:document.documentElement.scrollWidth,vw,cards:[...document.querySelectorAll("article.pet[data-combat-ready=row]")].map(c=>{
+      const cr=c.getBoundingClientRect(),cs=getComputedStyle(c),l=cr.left+parseFloat(cs.borderLeftWidth)+parseFloat(cs.paddingLeft),rt=cr.right-parseFloat(cs.borderRightWidth)-parseFloat(cs.paddingRight);
+      const st=c.querySelector("[data-combat-stage]"),i=st.querySelector("img").getBoundingClientRect();
+      return {pack:c.dataset.pack,inner:Math.round(rt-l),w:Math.round(i.width),scale:+st.dataset.scale,frame:+st.dataset.frame,fits:i.left>=l-0.5&&i.right<=rt+0.5&&i.right<=vw+0.5}})}})()`);
+    assert.strictEqual(r.sw, r.vw, `${vw}px: scrollWidth ${r.sw} equals the viewport ${r.vw} mid-move`);
+    for (const c of r.cards) {
+      assert.ok(c.fits, `${vw}px: ${c.pack} preview (${c.w}px at ${c.scale}x) is wider than its card's ${c.inner}px inside`);
+      assert.ok(Number.isInteger(c.scale) && c.scale >= 1 && c.scale <= 4 && (c.scale === 4 || (c.scale + 1) * 64 + 4 > c.inner), `${vw}px: ${c.pack} uses the largest integer scale that fits (${c.scale}x in ${c.inner}px)`);
+      fits++;
+    }
+  }
+  // Resizing an open page recomputes the scale (4x at 1280 -> smaller at 768 -> 4x again).
+  await call("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+  await call("Page.navigate", { url: `http://127.0.0.1:${port}${PREFIX}` }); await sl(500);
+  await ev(`new Promise(r=>{const w=()=>document.querySelector('article.pet[data-pack="baby-chinchompa"][data-combat-ready=row]')?r():setTimeout(w,50);w()})`);
+  const sc = () => ev(`+document.querySelector('article.pet[data-pack="baby-chinchompa"] [data-combat-stage]').dataset.scale`);
+  const seq = [await sc()];
+  for (const w of [768, 1280]) { await call("Emulation.setDeviceMetricsOverride", { width: w, height: 900, deviceScaleFactor: 1, mobile: false }); await sl(300); seq.push(await sc()); }
+  assert.ok(seq[0] === 4 && seq[1] < 4 && seq[2] === 4, "the preview scale follows the card on resize: " + seq.join(" -> "));
+  console.log(`PASS: combat preview fit (${fits} previews mid-move at ${WIDTHS.join("/")}px all inside their cards; scrollWidth = viewport; rescales on resize)`);
   assert.deepStrictEqual(errs, [], "no console exceptions or 404s");
   H.cleanup(); console.log(`PASS: combat switcher (${checked} switches by tap/Enter at 1280/390/340/320, all 22 at 1280; no sideways scroll)`); process.exit(0);
 })().catch(e => { console.error("FAIL", e.message || e); H.cleanup(); process.exit(1); });

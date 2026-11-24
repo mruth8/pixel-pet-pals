@@ -17,9 +17,9 @@
     return manifests[id];
   }
   function build(card, packDir, combat) {
-    var scale = innerWidth < 340 ? 3 : 4; // crisp integer scale: 64x34 -> 256x136, 64x42 -> 256x168 (3x on very narrow phones)
     // Start on a real frame (the stage is hidden until a click) so the page never holds a src-less, "broken" image.
-    var stageImg = el("img", { src: packDir + combat.moves[0].frameFiles[0], width: combat.frameWidth * scale, height: combat.frameHeight * scale, alt: "" });
+    // Its size is set by fit() below from the space the card actually has.
+    var stageImg = el("img", { src: packDir + combat.moves[0].frameFiles[0], alt: "" });
     var cap = el("p", { "class": "combat-cap", "aria-live": "polite" });
     var stage = el("div", { "class": "combat-stage", "data-combat-stage": "" }, [stageImg, cap]);
     stage.hidden = true;
@@ -65,6 +65,20 @@
     }
     var box = el("div", { "class": "combat", "data-combat": "" }, [el("div", { "class": "combat-h", text: "Combat" }), row, stage]);
     card.querySelector(".anims").insertAdjacentElement("afterend", box);
+    // Crisp integer scale chosen from the card's inner width, not the window: 4x (64x34 -> 256x136) when it fits,
+    // else 3x, 2x, 1x. The stage border adds 4px. Recomputed whenever the card is resized (e.g. 3-up cards at ~768px).
+    var scale = 0;
+    function fit() {
+      if (!box.isConnected) { if (ro) ro.disconnect(); else removeEventListener("resize", fit); return; }
+      var avail = box.clientWidth, s = 4;
+      while (s > 1 && combat.frameWidth * s + 4 > avail) s--;
+      if (s === scale) return;
+      scale = s; stage.setAttribute("data-scale", String(s));
+      stageImg.width = combat.frameWidth * s; stageImg.height = combat.frameHeight * s;
+    }
+    var ro = typeof ResizeObserver === "function" ? new ResizeObserver(fit) : null;
+    fit();
+    if (ro) ro.observe(box); else addEventListener("resize", fit);
   }
   // (Re)build a card's Combat row from its data-pack/data-variant. Resolves to true when a row was added.
   function mount(card) {

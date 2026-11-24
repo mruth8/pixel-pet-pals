@@ -76,7 +76,7 @@ iframe.live { border:0; background:transparent; display:block; max-width:100%; }
 .combat-try { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
 .combat-try > .pet { flex: 0 0 340px; width: 340px; min-width: 0; }
 .pet-grid { display: grid; grid-template-columns: repeat(6, 88px); gap: 10px 8px; align-content: start; }
-.pet-tile { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer; }
+.pet-tile { display: block; align-self: start; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer; }
 .pet-tile img { width: 64px; height: 64px; image-rendering: pixelated; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; background: var(--card); }
 .pet-tile span { display: block; font-size: 13px; line-height: 1.2; margin-top: 4px; text-align: center; }
 .pet-tile:hover img, .pet-tile:focus-visible img { outline: 3px solid var(--tile); outline-offset: 1px; }
