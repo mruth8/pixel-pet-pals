@@ -10,3 +10,8 @@ This is an original fan interpretation of a pet from Old School RuneScape.
 Not affiliated with Jagex. Old School RuneScape is a trademark of Jagex Ltd.
 
 Use: free to use and modify in non-commercial Pixel Pet Pals packs, with credit. (Final licence TBD.)
+
+Combat animations (Nov 23, 2026; grey only): mage (Ancient Staff + Ice Barrage), ranged (Rune Crossbow + bolt) and
+melee spec (Dragon Dagger (p++)), 4 frames each at 64x34 plus 32x32 button thumbnails, in `variants/grey/combat/`.
+Original pixel art drawn as code by the Graphics team (`draw_frames.py`) on the approved grey idle frames; approved
+Nov 23, 2026. No game sprites were used.

@@ -37,3 +37,15 @@ Packs may add an `activities` block, at the top level and/or per variant (`varia
 - `gearTier` `rune`|`dragon` (Youngllef crystal uses dragon), `propSide` `left`|`right`, and the optional `gif` per map entry are informational.
 - **Widget fallback:** for an `activity` event, `activities.map[activity.skill (lower-cased) || activity.category]` plays from the activities sheet, else `activityMap[activity.category]` with the base animations, else `default`. Other events still use `eventMap`.
   - Example: `{category:"skilling", skill:"Woodcutting"}` → woodcutting; `{category:"combat"}` → combat; `{category:"banking"}` → banking; `{category:"bossing"}` or `{skill:"Cooking"}` → activityMap.
+
+## Combat (optional, v7, additive)
+Packs may add a `combat` block, at the top level and/or per variant (`variants[].combat`; the variant's own block wins). The progress page (`site/combat.js`) shows a centred **Combat** row of buttons under walk/sleep/happy/party (layout 1A) only for cards whose pack resolves a block (`resolveCombat()` in `shared/pack.js`). Each move plays once in its own preview stage under the row. The card's big top picture always stays the plain pet. The widget ignores `combat`.
+
+```json
+"combat": { "frameWidth": 64, "frameHeight": 34, "thumbWidth": 32, "thumbHeight": 32,
+  "moves": [ { "id": "mage", "label": "mage", "title": "Ancient Staff + Ice Barrage", "thumb": "variants/grey/combat/thumb-mage.png",
+               "fps": 5, "frameFiles": ["variants/grey/combat/mage-1.png", "..."], "captions": ["Wind-up", "Cast", "Ice Barrage", "Shatter"] } ] }
+```
+- Moves show in array order. `id` is kebab-case and unique. `captions`, if given, has one entry per frame. `test/combat.js` checks every frame and thumb exists at the declared size.
+- **To add combat to another pet:** put its frames in the pack and add the block to its manifest. Then run `scripts/sync-site.sh` and give its card on `site/index.html` a `data-pack` (and `data-variant`). The Olmlet, Baby Mole and Baby Chinchompa cards already have one. No code changes are needed.
+- Shipped: `baby-chinchompa` grey only (mage, ranged, melee spec). Other pets and other chinchompa colours have no block, so no Combat row shows.

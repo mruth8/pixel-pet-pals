@@ -192,6 +192,9 @@
                 }
               }
             }
+          },
+          "combat": {
+            "$ref": "#/$defs/combat"
           }
         }
       }
@@ -205,6 +208,9 @@
     },
     "activities": {
       "$ref": "#/$defs/activities"
+    },
+    "combat": {
+      "$ref": "#/$defs/combat"
     }
   },
   "$defs": {
@@ -287,6 +293,79 @@
               },
               "gif": {
                 "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "combat": {
+      "type": "object",
+      "description": "Optional. Click-to-play combat moves for the progress page, shown in their own preview stage (the hero picture stays the plain pet). Variant block wins over top level.",
+      "required": [
+        "frameWidth",
+        "frameHeight",
+        "moves"
+      ],
+      "properties": {
+        "frameWidth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "frameHeight": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "thumbWidth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "thumbHeight": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "moves": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "thumb",
+              "fps",
+              "frameFiles"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "label": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "thumb": {
+                "type": "string"
+              },
+              "fps": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "frameFiles": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "captions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }

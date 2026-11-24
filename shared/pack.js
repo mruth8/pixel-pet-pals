@@ -25,6 +25,9 @@
     // Optional `activities` blocks (v0.5.0): top level and/or per variant. paletteColors counts PROP colours only (<=16).
     const blocks = [["activities", m.activities]].concat((m.variants || []).map(v => ["variants." + v.id + ".activities", v.activities]));
     for (const [where, a] of blocks) if (a !== undefined) for (const x of validateActivities(a, s)) e.push(where + ": " + x);
+    // Optional `combat` blocks: top level and/or per variant (the variant's own block wins).
+    const combat = [["combat", m.combat]].concat((m.variants || []).map(v => ["variants." + v.id + ".combat", v.combat]));
+    for (const [where, c] of combat) if (c !== undefined) for (const x of validateCombat(c)) e.push(where + ": " + x);
     return e;
   }
   function activitiesGrid(a) {
@@ -83,6 +86,35 @@
   function needsFlip(m, textSide = "right") { const f = m.facing || "right"; return f !== "front" && f !== textSide; }
   // Largest integer scale that fits the stage; taller frames (e.g. 32x40) drop a step so nothing is cropped.
   function fitScale(m, maxK, stageW, stageH) { let k = maxK; while (k > 1 && (m.sheet.frameWidth * k > stageW || m.sheet.frameHeight * k > stageH)) k--; return k; }
-  const api = { validatePack, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale, resolveVariant };
+  // Combat animations (optional): click-to-play moves shown in their own preview stage, never in the hero picture.
+  // { frameWidth, frameHeight, thumbWidth?, thumbHeight?, moves: [{ id, label, title?, thumb, fps, frameFiles[], captions?[] }] }
+  function validateCombat(c) {
+    const e = [];
+    if (!c || typeof c !== "object") return ["must be an object"];
+    for (const k of ["frameWidth", "frameHeight"]) if (!Number.isInteger(c[k]) || c[k] < 1) e.push(k + " must be a positive integer");
+    if (!Array.isArray(c.moves) || !c.moves.length) return e.concat("moves must be a non-empty array");
+    const seen = new Set();
+    for (const mv of c.moves) {
+      const id = mv && mv.id;
+      if (typeof id !== "string" || !/^[a-z0-9-]+$/.test(id)) { e.push("move id must be lower-case kebab-case"); continue; }
+      if (seen.has(id)) e.push("duplicate move " + id); seen.add(id);
+      if (typeof mv.label !== "string" || !mv.label) e.push(id + ": label required");
+      if (typeof mv.thumb !== "string") e.push(id + ": thumb required");
+      if (!(mv.fps > 0)) e.push(id + ": fps must be > 0");
+      if (!Array.isArray(mv.frameFiles) || !mv.frameFiles.length || mv.frameFiles.some(f => typeof f !== "string")) e.push(id + ": frameFiles required");
+      if (mv.captions !== undefined && (!Array.isArray(mv.captions) || mv.captions.length !== (mv.frameFiles || []).length)) e.push(id + ": captions must match frameFiles");
+    }
+    return e;
+  }
+  // The combat block for a variant (variant's own block, else top level), or null when the pet has no combat frames.
+  function resolveCombat(m, variant) {
+    const vs = (m && m.variants) || [];
+    const v = vs.find(x => x.id === variant) || vs.find(x => x.id === m.defaultVariant) || null;
+    const c = (v && v.combat) || (m && m.combat) || null;
+    return c && Array.isArray(c.moves) && c.moves.length ? c : null;
+  }
+  // Frame index to show `ms` after a move starts, or -1 once it has finished (the stage then hides again).
+  function combatFrameAt(move, ms) { const i = Math.floor(ms * move.fps / 1000); return i < move.frameFiles.length ? i : -1; }
+  const api = { validatePack, validateCombat, resolveCombat, combatFrameAt, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale, resolveVariant };
   if (typeof module !== "undefined") module.exports = api; else root.PPPPack = api;
 })(this);

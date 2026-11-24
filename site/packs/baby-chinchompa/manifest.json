@@ -163,6 +163,71 @@
           }
         },
         "fallback": "activityMap"
+      },
+      "combat": {
+        "frameWidth": 64,
+        "frameHeight": 34,
+        "thumbWidth": 32,
+        "thumbHeight": 32,
+        "moves": [
+          {
+            "id": "mage",
+            "label": "mage",
+            "title": "Ancient Staff + Ice Barrage",
+            "thumb": "variants/grey/combat/thumb-mage.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/grey/combat/mage-1.png",
+              "variants/grey/combat/mage-2.png",
+              "variants/grey/combat/mage-3.png",
+              "variants/grey/combat/mage-4.png"
+            ],
+            "captions": [
+              "Wind-up",
+              "Cast",
+              "Ice Barrage",
+              "Shatter"
+            ]
+          },
+          {
+            "id": "ranged",
+            "label": "ranged",
+            "title": "Rune Crossbow + bolt",
+            "thumb": "variants/grey/combat/thumb-ranged.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/grey/combat/ranged-1.png",
+              "variants/grey/combat/ranged-2.png",
+              "variants/grey/combat/ranged-3.png",
+              "variants/grey/combat/ranged-4.png"
+            ],
+            "captions": [
+              "Aim",
+              "Fire",
+              "Flight",
+              "Hit"
+            ]
+          },
+          {
+            "id": "melee-spec",
+            "label": "melee spec",
+            "title": "Dragon Dagger (p++) special attack",
+            "thumb": "variants/grey/combat/thumb-melee.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/grey/combat/melee-1.png",
+              "variants/grey/combat/melee-2.png",
+              "variants/grey/combat/melee-3.png",
+              "variants/grey/combat/melee-4.png"
+            ],
+            "captions": [
+              "Spec glow",
+              "Slash 1",
+              "Slash 2",
+              "Recover"
+            ]
+          }
+        ]
       }
     },
     {
