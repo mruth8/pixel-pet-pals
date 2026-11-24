@@ -6,7 +6,7 @@
 <!-- Relative URLs resolve against the page folder even without a trailing slash (/matthew/osrs/pixel-pet-pals).
      A static <base> is honoured by the browser's preload scanner, unlike a script-written one. If you host elsewhere, change this one line. -->
 <base href="/matthew/osrs/pixel-pet-pals/">
-<link rel="stylesheet" href="site.css?v=5f9baef">
+<link rel="stylesheet" href="site.css?v=combat1">
 <link rel="icon" href="packs/olmlet/frames/idle_00.png">
 </head><body>
 <header class="wrap hero">
@@ -27,7 +27,7 @@
   <section>
     <h2>Meet the pets</h2>
     <div class="pets">
-      <article class="card pet">
+      <article class="card pet" data-pack="olmlet">
         <img class="hero-gif" src="packs/olmlet/previews/idle.gif" alt="Olmlet idle animation" width="128" height="160">
         <h3>Olmlet</h3><p class="sub">Pale little dragon · 12 colours</p>
         <div class="anims">
@@ -37,7 +37,7 @@
           <figure><img src="packs/olmlet/previews/celebrate.gif" alt=""><figcaption>party</figcaption></figure>
         </div>
       </article>
-      <article class="card pet">
+      <article class="card pet" data-pack="baby-mole">
         <img class="hero-gif" src="packs/baby-mole/previews/idle.gif" alt="Baby Mole idle animation" width="128" height="128">
         <h3>Baby Mole</h3><p class="sub">Star-nosed digger · 15 colours</p>
         <div class="anims">
@@ -47,7 +47,7 @@
           <figure><img src="packs/baby-mole/previews/celebrate.gif" alt=""><figcaption>party</figcaption></figure>
         </div>
       </article>
-      <article class="card pet">
+      <article class="card pet" data-pack="baby-chinchompa" data-variant="grey">
         <img class="hero-gif" src="packs/baby-chinchompa/variants/grey/previews/idle.gif" alt="Baby Chinchompa idle animation" width="128" height="128">
         <h3>Baby Chinchompa</h3><p class="sub">Fluffy and explosive · 4 colours</p>
         <div class="anims">
@@ -110,6 +110,7 @@
   <section>
     <h2>Changelog</h2>
     <ol class="log card">
+      <li><b>v7</b> <span>Nov 24, 2026</span>Combat for Baby Chinchompa: tap mage (Ancient Staff and Ice Barrage), ranged (Rune Crossbow and bolt) or melee spec (Dragon Dagger (p++)) to watch it fight a training dummy.</li>
       <li><b>v6</b> <span>Oct 13, 2026</span>Six new pets: Baron, Callisto cub, Pet chaos elemental, Pet penance queen, Soup and Lil' Sot (a new form of Lil' Zik, with its own animations). Every new pet chops, mines, fishes, fights and banks.</li>
       <li><b>v4</b> <span>Oct 12, 2026</span>Nine new pets: Heron, Rocky, Phoenix, Lil' Zik, Beef, Youngllef (Corrupted and Crystal), Abyssal orphan, Butch and Lil'viathan. Olmlet now has room to hop.</li>
       <li><b>v3</b> <span>Oct 12, 2026</span>Full-body Olmlet, with the Baby Mole in its follower pose and the olive-grey Baby Chinchompa. Added red, black and gold chinchompa colours, each with the full animation set.</li>
@@ -130,4 +131,6 @@
     f.style.transform = "scale(" + s + ")"; b.style.height = Math.ceil(h * s) + "px"; }); }
   addEventListener("resize", fitWidgets); fitWidgets();
 </script>
+<script src="shared/pack.js?v=combat1"></script>
+<script src="combat.js?v=combat1"></script>
 </body></html>

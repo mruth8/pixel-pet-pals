@@ -55,3 +55,18 @@ iframe.live { border:0; background:transparent; display:block; max-width:100%; }
 .widgets figure { min-width:0; max-width:100%; }
 .live-box { position:relative; max-width:100%; overflow:hidden; }
 .live-box iframe.live { position:absolute; left:0; top:0; transform-origin:0 0; max-width:none; }
+/* Combat row (layout 1A): a separate, centred row of three under walk/sleep/happy/party, same tile size. */
+.combat-h { font-size: 15px; margin: 14px 0 6px; color: var(--ink); }
+.anims.three { grid-template-columns: repeat(3, calc((100% - 24px) / 4)); justify-content: center; }
+.combat-btn { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.combat-btn img { width: 64px; height: auto; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; background: var(--cream); }
+.combat-btn .cap { display: block; white-space: nowrap; font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+.combat-btn:hover img, .combat-btn:focus-visible img { outline: 3px solid var(--tile); outline-offset: 1px; }
+.combat-btn:focus-visible { outline: none; }
+.combat-btn.on img { outline: 3px solid var(--accent); outline-offset: 1px; }
+.combat-btn.on .cap { color: var(--ink); }
+/* Moves play here, never in the hero picture: 64x34 frames at a crisp integer scale. */
+.combat-stage { margin: 12px auto 0; width: max-content; max-width: 100%; }
+.combat-stage[hidden] { display: none; }
+.combat-stage img { border: 2px solid var(--ink); border-radius: 4px; background: var(--cream); image-rendering: pixelated; max-width: none; box-sizing: content-box; }
+.combat-cap { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
