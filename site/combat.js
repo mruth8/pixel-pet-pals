@@ -2,7 +2,7 @@
 // Data-driven: a card opts in with data-pack (+ data-variant); the row appears only if that pack's manifest has a
 // `combat` block (PPPPack.resolveCombat), so a pet gains combat by adding frames plus a manifest entry.
 // Moves play in their own preview stage under the row; the big top picture always stays the plain pet.
-// The "Combat" section's card has a pet/colour picker (data-combat-picker) that swaps the whole card.
+// The "Combat" section (switcher 1A) has a grid of all 22 pets (data-combat-grid); tapping one swaps the card to it.
 (function () {
   "use strict";
   var P = window.PPPPack, manifests = {};
@@ -80,12 +80,12 @@
       return !!c;
     });
   }
-  // Picker card: swap the plain previews (hero + walk/sleep/happy/party), name and colour, then remount the row.
+  // Switcher card: swap the plain previews (hero + walk/sleep/happy/party), name and colour, then remount the row.
   function choose(card, value) {
     var parts = value.split("/"), id = parts[0], variant = parts[1] || "";
-    card.removeAttribute("data-combat-ready");
+    card.removeAttribute("data-combat-ready"); card.setAttribute("data-combat-want", value);
     return manifest(id).then(function (m) {
-      if (!m) return;
+      if (!m || card.getAttribute("data-combat-want") !== value) return; // a later tap took over
       var v = (m.variants || []).find(function (x) { return x.id === variant; }) || null;
       var base = "packs/" + id + "/" + (v ? "variants/" + v.id + "/" : "") + "previews/";
       var hero = card.querySelector(".hero-gif"), hh = m.sheet.frameHeight * 4;
@@ -100,8 +100,16 @@
     });
   }
   document.querySelectorAll("article.pet[data-pack]").forEach(mount);
-  document.querySelectorAll("[data-combat-picker]").forEach(function (sel) {
-    var card = sel.closest("article.pet");
-    sel.addEventListener("change", function () { choose(card, sel.value); });
+  document.querySelectorAll("[data-combat-grid]").forEach(function (grid) {
+    var card = grid.parentNode.querySelector("article.pet[data-combat-try]"), tiles = grid.querySelectorAll("[data-combat-pet]");
+    tiles.forEach(function (t) {
+      t.addEventListener("click", function () {
+        tiles.forEach(function (x) { x.setAttribute("aria-pressed", String(x === t)); x.classList.toggle("on", x === t); });
+        choose(card, t.getAttribute("data-combat-pet"));
+        // Stacked layout (phones): the card sits under the grid, so bring it into view if it is off screen.
+        var r = card.getBoundingClientRect();
+        if (r.top > innerHeight || r.bottom < 0) card.scrollIntoView({ block: "start", behavior: "smooth" });
+      });
+    });
   });
 })();

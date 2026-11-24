@@ -1,6 +1,7 @@
 // Combat animations: every pack and colour has a complete, valid combat set (12 frames at the right size, 3 thumbs),
 // resolution is per variant, a pet without frames gets no row, playback timing, and the page wiring
-// (Combat row is data-driven; the hero picture stays the plain pet; the picker lists every pet and colour).
+// (Combat row is data-driven; the hero picture stays the plain pet; switcher 1A: a grid of 22 pet buttons, and
+// tapping one, in headless Chrome, switches the Combat card to that pet with no sideways scroll at 320/340/390/1280).
 const assert = require("assert"), fs = require("fs"), path = require("path");
 const { validatePack, validateCombat, resolveCombat, combatNextFrame } = require("../shared/pack");
 const { readPng } = require("./png");
@@ -65,12 +66,85 @@ assert.ok(validatePack({ ...chin, combat: { moves: "nope" } }).length, "validate
 const mv5 = { fps: 5, frameFiles: [1, 2, 3, 4] };
 assert.deepStrictEqual([[0, 199], [0, 200], [0, 5000], [2, 250], [3, 199], [3, 200]].map(([f, ms]) => combatNextFrame(mv5, f, ms)), [0, 1, 1, 3, 3, -1]);
 
-// Page: cards opt in by pack id; hero pictures are the plain idle previews; the picker lists all 22 sets.
+// Page: cards opt in by pack id; hero pictures are the plain idle previews; switcher 1A lists all 22 sets as buttons.
 const html = fs.readFileSync(path.join(R, "site", "index.html"), "utf8");
 for (const [, src] of html.matchAll(/class="hero-gif" src="([^"]+)"/g)) assert.ok(/\/previews\/idle\.gif$/.test(src) && !/combat/.test(src), "hero stays plain: " + src);
-const options = [...html.matchAll(/<option value="([^"]+)"/g)].map(x => x[1]);
-assert.deepStrictEqual([...options].sort(), sets.map(s => s.tag).sort(), "the picker lists every pet and colour once");
+assert.ok(!/<select|data-combat-picker/.test(html), "the provisional dropdown is gone");
+const tiles = [...html.matchAll(/<button type="button" class="pet-tile( on)?" data-combat-pet="([^"]+)" aria-pressed="(true|false)"(?: aria-label="([^"]+)")?><img src="([^"]+)" width="64" height="64" alt=""><span>([^<]+)<\/span><\/button>/g)]
+  .map(([, on, tag, pressed, aria, img, text]) => ({ on: !!on, tag, pressed: pressed === "true", name: aria || text, text, img }));
+assert.strictEqual((html.match(/data-combat-pet=/g) || []).length, 22, "22 pet buttons");
+assert.deepStrictEqual(tiles.map(t => t.tag).sort(), sets.map(s => s.tag).sort(), "the grid has one button per pet and colour");
+for (const t of tiles) {
+  const s = sets.find(x => x.tag === t.tag), [id] = t.tag.split("/");
+  assert.strictEqual(t.img, `packs/${id}/${s.thumbs[0]}`, t.tag + " button shows its own combat thumbnail");
+  assert.ok(t.name.includes(t.text) && t.name.trim(), t.tag + " button is labelled with the pet name");
+}
+assert.strictEqual(new Set(tiles.map(t => t.name)).size, 22, "every button has a distinct name");
+const def = tiles.filter(t => t.on || t.pressed);
+assert.ok(def.length === 1 && def[0].on && def[0].pressed && def[0].tag === "baron", "Baron is selected by default, as in the 1A mockup");
+assert.ok(/<article class="card pet" data-pack="baron" data-combat-try>/.test(html), "the Combat card starts on Baron");
 assert.ok(/<script src="shared\/pack\.js[^"]*"><\/script>\s*<script src="combat\.js[^"]*"><\/script>/.test(html), "pack.js loads before combat.js");
 const js = fs.readFileSync(path.join(R, "site", "combat.js"), "utf8");
-assert.ok(/hero\.src = base \+ "idle\.gif"/.test(js) && (js.match(/hero\.src\s*=/g) || []).length === 1, "the picker only ever sets the plain idle preview on the hero");
-console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${bytes.size} files checked (264 frames + 66 own thumbnails, none shared); placeholder/fixture without frames -> no row)`);
+assert.ok(/hero\.src = base \+ "idle\.gif"/.test(js) && (js.match(/hero\.src\s*=/g) || []).length === 1, "the switcher only ever sets the plain idle preview on the hero");
+console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${bytes.size} files checked (264 frames + 66 own thumbnails, none shared); placeholder/fixture without frames -> no row; 22 switcher buttons)`);
+
+// Headless Chrome: tapping (and Enter on) each button switches the card; no sideways scroll at 320/340/390/1280.
+const http = require("http"), H = require("./harness"), SITE = path.join(R, "site"), PREFIX = "/matthew/osrs/pixel-pet-pals/";
+const MIME = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".png": "image/png", ".gif": "image/gif", ".ttf": "font/ttf" };
+const srv = http.createServer((req, res) => {
+  let u = decodeURIComponent(new URL(req.url, "http://x").pathname); if (!u.startsWith(PREFIX)) { res.writeHead(404); return res.end(); }
+  let f = path.normalize(path.join(SITE, u.slice(PREFIX.length))); if (f === SITE || f.endsWith(path.sep)) f = path.join(f, "index.html");
+  if (!f.startsWith(SITE)) { res.writeHead(404); return res.end(); }
+  fs.readFile(f, (e, d) => { if (e) { res.writeHead(404); return res.end(); } res.writeHead(200, { "content-type": MIME[path.extname(f)] || "application/octet-stream" }); res.end(d); });
+});
+const sl = ms => new Promise(r => setTimeout(r, ms)), errs = [];
+(async () => {
+  const port = await H.port("COMBAT_PORT"); await new Promise(r => srv.listen(port, "127.0.0.1", r)); H.onCleanup(() => srv.close());
+  const chrome = await H.launchChrome({ envPort: "CHROME_DEBUG_PORT" });
+  const ws = new WebSocket(chrome.wsUrl); H.onCleanup(() => ws.close()); await new Promise(r => ws.onopen = r);
+  let n = 0; const pend = {};
+  ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend[d.id]) pend[d.id](d.result);
+    if (d.method === "Runtime.exceptionThrown") errs.push("exception " + d.params.exceptionDetails.text);
+    if (d.method === "Network.responseReceived" && d.params.response.status >= 400) errs.push(d.params.response.status + " " + d.params.response.url); };
+  const call = (method, params = {}) => new Promise((r, j) => { const i = ++n, to = setTimeout(() => j(new Error("CDP timeout " + method)), 20000); pend[i] = v => { clearTimeout(to); r(v); }; ws.send(JSON.stringify({ id: i, method, params })); });
+  const ev = async x => { const r = await call("Runtime.evaluate", { expression: x, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error(x.slice(0, 80) + ": " + r.exceptionDetails.text); return r.result.value; };
+  await call("Runtime.enable"); await call("Network.enable");
+  const state = `(()=>{const c=document.querySelector("[data-combat-try]"),p=[...document.querySelectorAll("[data-combat-pet][aria-pressed=true]")];
+    return {tag:c.dataset.pack+(c.dataset.variant?"/"+c.dataset.variant:""),ready:c.dataset.combatReady,h3:c.querySelector("h3").textContent,hero:c.querySelector(".hero-gif").getAttribute("src"),
+      pressed:p.map(x=>x.dataset.combatPet),on:[...document.querySelectorAll(".pet-tile.on")].map(x=>x.dataset.combatPet),
+      thumbs:[...c.querySelectorAll(".combat-btn img")].map(i=>i.getAttribute("src")),
+      over:document.documentElement.scrollWidth-document.documentElement.clientWidth}})()`;
+  const waitFor = async (tag) => { let s; for (let i = 0; i < 100; i++) { s = await ev(state); if (s.tag === tag && s.ready === "row") return s; await sl(50); } return s; };
+  let checked = 0;
+  for (const vw of [1280, 390, 340, 320]) {
+    await call("Emulation.setDeviceMetricsOverride", { width: vw, height: 900, deviceScaleFactor: 1, mobile: vw < 500 });
+    await call("Page.navigate", { url: `http://127.0.0.1:${port}${PREFIX}` }); await sl(800);
+    await ev(`document.fonts.ready.then(()=>new Promise(r=>{const w=()=>[...document.images].every(i=>i.complete)?r():setTimeout(w,50);w()}))`);
+    let s = await waitFor("baron");
+    assert.deepStrictEqual([s.tag, s.pressed, s.on], ["baron", ["baron"], ["baron"]], vw + "px: starts on Baron, selected");
+    assert.strictEqual(await ev(`[...document.querySelectorAll("[data-combat-pet] img")].filter(i=>!i.naturalWidth).length`), 0, vw + "px: all 22 pictures load");
+    assert.ok(s.over <= 0, `${vw}px: no sideways scroll (${s.over}px)`);
+    const order = vw === 1280 ? tiles.map(t => t.tag) : ["olmlet", "baby-chinchompa/red", "youngllef/crystal", "baron"];
+    for (const tag of order) {
+      const key = vw === 340; // keyboard path: focus the button and press Enter
+      if (key) { await ev(`document.querySelector('[data-combat-pet="${tag}"]').focus()`);
+        for (const type of ["keyDown", "keyUp"]) await call("Input.dispatchKeyEvent", { type, key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: type === "keyDown" ? "\r" : undefined }); }
+      else await ev(`document.querySelector('[data-combat-pet="${tag}"]').click()`);
+      s = await waitFor(tag); const set = sets.find(x => x.tag === tag), [id] = tag.split("/");
+      assert.strictEqual(s.tag, tag, `${vw}px: ${key ? "Enter" : "tap"} on ${tag} switches the card`);
+      assert.deepStrictEqual([s.pressed, s.on], [[tag], [tag]], `${vw}px: only ${tag} is selected`);
+      assert.ok(s.hero.startsWith(`packs/${id}/${tag.includes("/") ? "variants/" + tag.split("/")[1] + "/" : ""}previews/`) && s.hero.endsWith("/idle.gif"), `${vw}px: ${tag} hero is its plain idle preview`);
+      assert.deepStrictEqual(s.thumbs, set.thumbs.map(t => `packs/${id}/${t}`), `${vw}px: ${tag} move buttons use its own thumbnails`);
+      assert.ok(s.over <= 0, `${vw}px: no sideways scroll after switching to ${tag} (${s.over}px)`);
+      checked++;
+    }
+    // A move plays on the switched pet, still without sideways scroll.
+    await ev(`document.querySelector('[data-combat-pet="olmlet"]').click()`); await waitFor("olmlet");
+    await ev(`document.querySelector('[data-combat-try] [data-move="melee-spec"]').click()`);
+    let f = -1; for (let i = 0; i < 60 && f < 1; i++) { await sl(50); f = +(await ev(`document.querySelector('[data-combat-try] [data-combat-stage]').dataset.frame||-1`)); }
+    assert.ok(f >= 1, vw + "px: Olmlet's melee spec plays after switching");
+    assert.ok((await ev(state)).over <= 0, vw + "px: no sideways scroll mid-move");
+  }
+  assert.deepStrictEqual(errs, [], "no console exceptions or 404s");
+  H.cleanup(); console.log(`PASS: combat switcher (${checked} switches by tap/Enter at 1280/390/340/320, all 22 at 1280; no sideways scroll)`); process.exit(0);
+})().catch(e => { console.error("FAIL", e.message || e); H.cleanup(); process.exit(1); });

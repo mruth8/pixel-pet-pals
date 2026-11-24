@@ -72,8 +72,21 @@ iframe.live { border:0; background:transparent; display:block; max-width:100%; }
 .combat-cap { font-size: 13px; line-height: 1.45; color: var(--muted); margin: 4px 0 0; overflow-wrap: break-word; min-height: 2.9em; } /* two lines reserved: no jump mid-move */
 /* Grid items must not grow to fit their content (e.g. a long move caption) on narrow phones. */
 .pets > .pet { min-width: 0; }
-/* Combat section: one picker card, the same size as a card in the 3-up grid. */
-.pets.one { grid-template-columns: minmax(0, 340px); justify-content: center; }
-.pick { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin: 0 0 12px; }
-.pick select { font: inherit; font-size: 15px; color: var(--ink); background: var(--card); border: 2px solid var(--ink); border-radius: 3px; padding: 2px 6px; min-width: 0; max-width: 100%; }
+/* Combat section (switcher 1A): all 22 pets as picture buttons next to the Combat card; tap one to switch the card. */
+.combat-try { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
+.combat-try > .pet { flex: 0 0 340px; width: 340px; min-width: 0; }
+.pet-grid { display: grid; grid-template-columns: repeat(6, 88px); gap: 10px 8px; align-content: start; }
+.pet-tile { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer; }
+.pet-tile img { width: 64px; height: auto; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; background: var(--card); }
+.pet-tile span { display: block; font-size: 13px; line-height: 1.2; margin-top: 4px; text-align: center; }
+.pet-tile:hover img, .pet-tile:focus-visible img { outline: 3px solid var(--tile); outline-offset: 1px; }
+.pet-tile:focus-visible { outline: none; }
+.pet-tile.on img { outline: 3px solid var(--accent); outline-offset: 1px; }
+.pet-tile.on span { color: var(--ink); }
 [data-combat-try] .sub { min-height: 1.45em; }
+/* Too narrow for grid + card side by side: the grid sits above the card and fills the width. */
+@media (max-width: 1000px) {
+  .combat-try { flex-direction: column; align-items: center; gap: 20px; }
+  .pet-grid { width: 100%; max-width: 568px; grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); gap: 10px 6px; }
+  .combat-try > .pet { flex: none; width: 100%; max-width: 340px; }
+}

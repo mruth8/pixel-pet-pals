@@ -6,7 +6,7 @@
 <!-- Relative URLs resolve against the page folder even without a trailing slash (/matthew/osrs/pixel-pet-pals).
      A static <base> is honoured by the browser's preload scanner, unlike a script-written one. If you host elsewhere, change this one line. -->
 <base href="/matthew/osrs/pixel-pet-pals/">
-<link rel="stylesheet" href="site.css?v=combat3">
+<link rel="stylesheet" href="site.css?v=combat4">
 <link rel="icon" href="packs/olmlet/frames/idle_00.png">
 </head><body>
 <header class="wrap hero">
@@ -96,42 +96,40 @@
 
   <section>
     <h2>Combat</h2>
-    <p class="note">Every pet and colour can fight: mage, ranged and a melee spec. Pick one and tap a move.</p>
-    <div class="pets one">
-      <article class="card pet" data-pack="baby-chinchompa" data-variant="gold" data-combat-try>
-        <label class="pick">Pet
-          <select data-combat-picker aria-label="Pet and colour">
-          <option value="olmlet">Olmlet</option>
-          <option value="baby-mole">Baby Mole</option>
-          <option value="baby-chinchompa/grey">Baby Chinchompa · Grey</option>
-          <option value="baby-chinchompa/red">Baby Chinchompa · Red</option>
-          <option value="baby-chinchompa/black">Baby Chinchompa · Black</option>
-          <option value="baby-chinchompa/gold" selected>Baby Chinchompa · Gold</option>
-          <option value="heron">Heron</option>
-          <option value="rocky">Rocky</option>
-          <option value="phoenix">Phoenix</option>
-          <option value="lil-zik/zik">Lil' Zik</option>
-          <option value="lil-zik/sot">Lil' Sot</option>
-          <option value="beef">Beef</option>
-          <option value="youngllef/corrupted">Youngllef · Corrupted</option>
-          <option value="youngllef/crystal">Youngllef · Crystal</option>
-          <option value="abyssal-orphan">Abyssal orphan</option>
-          <option value="butch">Butch</option>
-          <option value="lilviathan">Lil'viathan</option>
-          <option value="baron">Baron</option>
-          <option value="callisto-cub">Callisto cub</option>
-          <option value="chaos-elemental">Pet chaos elemental</option>
-          <option value="penance-queen">Pet penance queen</option>
-          <option value="soup">Soup</option>
-          </select>
-        </label>
-        <img class="hero-gif" src="packs/baby-chinchompa/variants/gold/previews/idle.gif" alt="Baby Chinchompa (Gold) idle animation" width="128" height="128">
-        <h3>Baby Chinchompa</h3><p class="sub">Gold</p>
+    <p class="note">Every pet and colour can fight: mage, ranged and a melee spec. Tap a pet, then a move.</p>
+    <div class="combat-try">
+      <div class="pet-grid" role="group" aria-label="Choose a pet" data-combat-grid>
+        <button type="button" class="pet-tile" data-combat-pet="olmlet" aria-pressed="false"><img src="packs/olmlet/combat/thumb-mage.png" width="64" height="64" alt=""><span>Olmlet</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="baby-mole" aria-pressed="false"><img src="packs/baby-mole/combat/thumb-mage.png" width="64" height="64" alt=""><span>Baby Mole</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="baby-chinchompa/grey" aria-pressed="false" aria-label="Grey Baby Chinchompa"><img src="packs/baby-chinchompa/variants/grey/combat/thumb-mage.png" width="64" height="64" alt=""><span>Grey</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="baby-chinchompa/red" aria-pressed="false" aria-label="Red Baby Chinchompa"><img src="packs/baby-chinchompa/variants/red/combat/thumb-mage.png" width="64" height="64" alt=""><span>Red</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="baby-chinchompa/black" aria-pressed="false" aria-label="Black Baby Chinchompa"><img src="packs/baby-chinchompa/variants/black/combat/thumb-mage.png" width="64" height="64" alt=""><span>Black</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="baby-chinchompa/gold" aria-pressed="false" aria-label="Gold Baby Chinchompa"><img src="packs/baby-chinchompa/variants/gold/combat/thumb-mage.png" width="64" height="64" alt=""><span>Gold</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="heron" aria-pressed="false"><img src="packs/heron/combat/thumb-mage.png" width="64" height="64" alt=""><span>Heron</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="rocky" aria-pressed="false"><img src="packs/rocky/combat/thumb-mage.png" width="64" height="64" alt=""><span>Rocky</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="phoenix" aria-pressed="false"><img src="packs/phoenix/combat/thumb-mage.png" width="64" height="64" alt=""><span>Phoenix</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="lil-zik/zik" aria-pressed="false"><img src="packs/lil-zik/variants/zik/combat/thumb-mage.png" width="64" height="64" alt=""><span>Lil' Zik</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="lil-zik/sot" aria-pressed="false"><img src="packs/lil-zik/variants/sot/combat/thumb-mage.png" width="64" height="64" alt=""><span>Lil' Sot</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="beef" aria-pressed="false"><img src="packs/beef/combat/thumb-mage.png" width="64" height="64" alt=""><span>Beef</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="youngllef/corrupted" aria-pressed="false" aria-label="Youngllef (Corrupted)"><img src="packs/youngllef/variants/corrupted/combat/thumb-mage.png" width="64" height="64" alt=""><span>Youngllef</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="youngllef/crystal" aria-pressed="false"><img src="packs/youngllef/variants/crystal/combat/thumb-mage.png" width="64" height="64" alt=""><span>Crystal Youngllef</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="abyssal-orphan" aria-pressed="false"><img src="packs/abyssal-orphan/combat/thumb-mage.png" width="64" height="64" alt=""><span>Abyssal orphan</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="butch" aria-pressed="false"><img src="packs/butch/combat/thumb-mage.png" width="64" height="64" alt=""><span>Butch</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="lilviathan" aria-pressed="false"><img src="packs/lilviathan/combat/thumb-mage.png" width="64" height="64" alt=""><span>Lil'viathan</span></button>
+        <button type="button" class="pet-tile on" data-combat-pet="baron" aria-pressed="true"><img src="packs/baron/combat/thumb-mage.png" width="64" height="64" alt=""><span>Baron</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="callisto-cub" aria-pressed="false"><img src="packs/callisto-cub/combat/thumb-mage.png" width="64" height="64" alt=""><span>Callisto cub</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="chaos-elemental" aria-pressed="false"><img src="packs/chaos-elemental/combat/thumb-mage.png" width="64" height="64" alt=""><span>Chaos elemental</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="penance-queen" aria-pressed="false"><img src="packs/penance-queen/combat/thumb-mage.png" width="64" height="64" alt=""><span>Penance queen</span></button>
+        <button type="button" class="pet-tile" data-combat-pet="soup" aria-pressed="false"><img src="packs/soup/combat/thumb-mage.png" width="64" height="64" alt=""><span>Soup</span></button>
+      </div>
+      <article class="card pet" data-pack="baron" data-combat-try>
+        <img class="hero-gif" src="packs/baron/previews/idle.gif" alt="Baron idle animation" width="128" height="128">
+        <h3>Baron</h3><p class="sub"></p>
         <div class="anims">
-          <figure><img src="packs/baby-chinchompa/variants/gold/previews/walk.gif" alt=""><figcaption>walk</figcaption></figure>
-          <figure><img src="packs/baby-chinchompa/variants/gold/previews/sleep.gif" alt=""><figcaption>sleep</figcaption></figure>
-          <figure><img src="packs/baby-chinchompa/variants/gold/previews/happy.gif" alt=""><figcaption>happy</figcaption></figure>
-          <figure><img src="packs/baby-chinchompa/variants/gold/previews/celebrate.gif" alt=""><figcaption>party</figcaption></figure>
+          <figure><img src="packs/baron/previews/walk.gif" alt=""><figcaption>walk</figcaption></figure>
+          <figure><img src="packs/baron/previews/sleep.gif" alt=""><figcaption>sleep</figcaption></figure>
+          <figure><img src="packs/baron/previews/happy.gif" alt=""><figcaption>happy</figcaption></figure>
+          <figure><img src="packs/baron/previews/celebrate.gif" alt=""><figcaption>party</figcaption></figure>
         </div>
       </article>
     </div>
@@ -174,6 +172,6 @@
     f.style.transform = "scale(" + s + ")"; b.style.height = Math.ceil(h * s) + "px"; }); }
   addEventListener("resize", fitWidgets); fitWidgets();
 </script>
-<script src="shared/pack.js?v=combat3"></script>
-<script src="combat.js?v=combat3"></script>
+<script src="shared/pack.js?v=combat4"></script>
+<script src="combat.js?v=combat4"></script>
 </body></html>
