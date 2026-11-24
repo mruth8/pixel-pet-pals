@@ -14,4 +14,4 @@ Use: free to use and modify in non-commercial Pixel Pet Pals packs, with credit.
 
 Combat animations (Nov 24, 2026): mage (Ancient Staff + Ice Barrage), ranged (Rune Crossbow + bolt) and melee spec
 (Dragon Dagger (p++)), 4 frames each, in `combat/`. Original pixel art by the Graphics team.
-The 32x32 button thumbnails reuse the Baby Chinchompa (grey) set. No game sprites were used.
+No game sprites were used.

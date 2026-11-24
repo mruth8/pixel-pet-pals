@@ -24,14 +24,21 @@ for (const id of ids) {
     const files = c.moves.flatMap(x => x.frameFiles);
     assert.strictEqual(new Set(files).size, 12, tag + " has 12 distinct frames");
     for (const f of files) { const p = readPng(path.join(dir, id, f)); assert.strictEqual(`${p.width}x${p.height}`, `64x${height}`, `${tag} ${f}`); }
-    for (const x of c.moves) { const t = readPng(path.join(dir, id, x.thumb)); assert.strictEqual(`${t.width}x${t.height}`, "32x32", `${tag} ${x.thumb}`); }
-    sets.push({ tag, files });
+    const thumbs = c.moves.map(x => x.thumb), folder = path.posix.dirname(files[0]);
+    assert.deepStrictEqual(thumbs, ["thumb-mage.png", "thumb-ranged.png", "thumb-melee.png"].map(t => folder + "/" + t), tag + " thumbs live in its own combat folder");
+    for (const t of thumbs) { const p = readPng(path.join(dir, id, t)); assert.strictEqual(`${p.width}x${p.height}`, "32x32", `${tag} ${t}`); }
+    sets.push({ tag, files, thumbs });
   }
 }
 assert.strictEqual(sets.length, 22, "17 pets plus colour/form versions = 22 combat sets");
-// Colours never share frames with each other (each plays its own art).
-const seen = new Map();
-for (const s of sets) for (const f of s.files) { const k = s.tag.split("/")[0] + "/" + f; assert.ok(!seen.has(k), "frame reused: " + k); seen.set(k, s.tag); }
+// Every set has its own frames and its own 3 thumbnails: no path and no image content is shared between sets.
+const seen = new Map(), bytes = new Map(), crypto = require("crypto");
+for (const s of sets) for (const f of s.files.concat(s.thumbs)) {
+  const k = s.tag.split("/")[0] + "/" + f; assert.ok(!seen.has(k), "file reused: " + k); seen.set(k, s.tag);
+  const h = crypto.createHash("sha256").update(fs.readFileSync(path.join(dir, k))).digest("hex");
+  assert.ok(!bytes.has(h), `${k} is identical to ${bytes.get(h)}`); bytes.set(h, k);
+}
+assert.strictEqual(bytes.size, 22 * 15, "264 frames + 66 thumbnails, all distinct");
 
 // A pet without frames still gets no row: the dev placeholder pack, a fixture, and empty blocks.
 const blob = ld("placeholder-blob");
@@ -66,4 +73,4 @@ assert.deepStrictEqual([...options].sort(), sets.map(s => s.tag).sort(), "the pi
 assert.ok(/<script src="shared\/pack\.js[^"]*"><\/script>\s*<script src="combat\.js[^"]*"><\/script>/.test(html), "pack.js loads before combat.js");
 const js = fs.readFileSync(path.join(R, "site", "combat.js"), "utf8");
 assert.ok(/hero\.src = base \+ "idle\.gif"/.test(js) && (js.match(/hero\.src\s*=/g) || []).length === 1, "the picker only ever sets the plain idle preview on the hero");
-console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${seen.size} frames checked; placeholder/fixture without frames -> no row)`);
+console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${bytes.size} files checked (264 frames + 66 own thumbnails, none shared); placeholder/fixture without frames -> no row)`);
