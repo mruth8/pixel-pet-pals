@@ -76,7 +76,11 @@ assert.strictEqual((html.match(/data-combat-pet=/g) || []).length, 22, "22 pet b
 assert.deepStrictEqual(tiles.map(t => t.tag).sort(), sets.map(s => s.tag).sort(), "the grid has one button per pet and colour");
 for (const t of tiles) {
   const s = sets.find(x => x.tag === t.tag), [id] = t.tag.split("/");
-  assert.strictEqual(t.img, `packs/${id}/${s.thumbs[0]}`, t.tag + " button shows its own combat thumbnail");
+  const tile = `${path.posix.dirname(s.files[0])}/tile.png`, tp = readPng(path.join(dir, id, tile));
+  assert.strictEqual(t.img, `packs/${id}/${tile}`, t.tag + " button shows its own plain pet tile (Graphics' 1A tile)");
+  assert.strictEqual(`${tp.width}x${tp.height}`, "32x32", t.tag + " tile is 32x32");
+  const th = crypto.createHash("sha256").update(fs.readFileSync(path.join(dir, id, tile))).digest("hex");
+  assert.ok(!bytes.has(th), `${t.tag} tile is identical to ${bytes.get(th)}`); bytes.set(th, t.tag + " tile");
   assert.ok(t.name.includes(t.text) && t.name.trim(), t.tag + " button is labelled with the pet name");
 }
 assert.strictEqual(new Set(tiles.map(t => t.name)).size, 22, "every button has a distinct name");
@@ -86,7 +90,7 @@ assert.ok(/<article class="card pet" data-pack="baron" data-combat-try>/.test(ht
 assert.ok(/<script src="shared\/pack\.js[^"]*"><\/script>\s*<script src="combat\.js[^"]*"><\/script>/.test(html), "pack.js loads before combat.js");
 const js = fs.readFileSync(path.join(R, "site", "combat.js"), "utf8");
 assert.ok(/hero\.src = base \+ "idle\.gif"/.test(js) && (js.match(/hero\.src\s*=/g) || []).length === 1, "the switcher only ever sets the plain idle preview on the hero");
-console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${bytes.size} files checked (264 frames + 66 own thumbnails, none shared); placeholder/fixture without frames -> no row; 22 switcher buttons)`);
+console.log(`PASS: combat (${sets.length} sets across ${ids.length} pets, ${bytes.size} files checked (264 frames + 66 own thumbnails + 22 switcher tiles, none shared); placeholder/fixture without frames -> no row; 22 switcher buttons)`);
 
 // Headless Chrome: tapping (and Enter on) each button switches the card; no sideways scroll at 320/340/390/1280.
 const http = require("http"), H = require("./harness"), SITE = path.join(R, "site"), PREFIX = "/matthew/osrs/pixel-pet-pals/";
