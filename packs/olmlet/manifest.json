@@ -161,5 +161,70 @@
       }
     },
     "fallback": "activityMap"
+  },
+  "combat": {
+    "frameWidth": 64,
+    "frameHeight": 42,
+    "thumbWidth": 32,
+    "thumbHeight": 32,
+    "moves": [
+      {
+        "id": "mage",
+        "label": "mage",
+        "title": "Ancient Staff + Ice Barrage",
+        "thumb": "combat/thumb-mage.png",
+        "fps": 5,
+        "frameFiles": [
+          "combat/mage_00.png",
+          "combat/mage_01.png",
+          "combat/mage_02.png",
+          "combat/mage_03.png"
+        ],
+        "captions": [
+          "Wind-up",
+          "Cast",
+          "Ice Barrage",
+          "Shatter"
+        ]
+      },
+      {
+        "id": "ranged",
+        "label": "ranged",
+        "title": "Rune Crossbow + bolt",
+        "thumb": "combat/thumb-ranged.png",
+        "fps": 5,
+        "frameFiles": [
+          "combat/ranged_00.png",
+          "combat/ranged_01.png",
+          "combat/ranged_02.png",
+          "combat/ranged_03.png"
+        ],
+        "captions": [
+          "Aim",
+          "Fire",
+          "Flight",
+          "Hit"
+        ]
+      },
+      {
+        "id": "melee-spec",
+        "label": "melee spec",
+        "title": "Dragon Dagger (p++) special attack",
+        "thumb": "combat/thumb-melee.png",
+        "fps": 5,
+        "frameFiles": [
+          "combat/spec_00.png",
+          "combat/spec_01.png",
+          "combat/spec_02.png",
+          "combat/spec_03.png"
+        ],
+        "captions": [
+          "Spec glow",
+          "Slash 1",
+          "Slash 2",
+          "Recover"
+        ]
+      }
+    ]
   }
 }

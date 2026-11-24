@@ -113,8 +113,12 @@
     const c = (v && v.combat) || (m && m.combat) || null;
     return c && Array.isArray(c.moves) && c.moves.length ? c : null;
   }
-  // Frame index to show `ms` after a move starts, or -1 once it has finished (the stage then hides again).
-  function combatFrameAt(move, ms) { const i = Math.floor(ms * move.fps / 1000); return i < move.frameFiles.length ? i : -1; }
-  const api = { validatePack, validateCombat, resolveCombat, combatFrameAt, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale, resolveVariant };
+  // Playback step: the frame to show after `msInFrame` ms on `frame`. Advances at most one frame per call, so a slow
+  // tick never skips a frame. Returns -1 once the last frame has had its full time (the stage then hides again).
+  function combatNextFrame(move, frame, msInFrame) {
+    if (msInFrame < 1000 / move.fps) return frame;
+    return frame + 1 < move.frameFiles.length ? frame + 1 : -1;
+  }
+  const api = { validatePack, validateCombat, resolveCombat, combatNextFrame, validateActivities, resolveSheet, resolveActivities, pickActivity, activitiesGrid, needsFlip, fitScale, resolveVariant };
   if (typeof module !== "undefined") module.exports = api; else root.PPPPack = api;
 })(this);

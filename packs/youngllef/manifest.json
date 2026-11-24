@@ -168,6 +168,71 @@
           }
         },
         "fallback": "activityMap"
+      },
+      "combat": {
+        "frameWidth": 64,
+        "frameHeight": 34,
+        "thumbWidth": 32,
+        "thumbHeight": 32,
+        "moves": [
+          {
+            "id": "mage",
+            "label": "mage",
+            "title": "Ancient Staff + Ice Barrage",
+            "thumb": "variants/corrupted/combat/thumb-mage.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/corrupted/combat/mage_00.png",
+              "variants/corrupted/combat/mage_01.png",
+              "variants/corrupted/combat/mage_02.png",
+              "variants/corrupted/combat/mage_03.png"
+            ],
+            "captions": [
+              "Wind-up",
+              "Cast",
+              "Ice Barrage",
+              "Shatter"
+            ]
+          },
+          {
+            "id": "ranged",
+            "label": "ranged",
+            "title": "Rune Crossbow + bolt",
+            "thumb": "variants/corrupted/combat/thumb-ranged.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/corrupted/combat/ranged_00.png",
+              "variants/corrupted/combat/ranged_01.png",
+              "variants/corrupted/combat/ranged_02.png",
+              "variants/corrupted/combat/ranged_03.png"
+            ],
+            "captions": [
+              "Aim",
+              "Fire",
+              "Flight",
+              "Hit"
+            ]
+          },
+          {
+            "id": "melee-spec",
+            "label": "melee spec",
+            "title": "Dragon Dagger (p++) special attack",
+            "thumb": "variants/corrupted/combat/thumb-melee.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/corrupted/combat/spec_00.png",
+              "variants/corrupted/combat/spec_01.png",
+              "variants/corrupted/combat/spec_02.png",
+              "variants/corrupted/combat/spec_03.png"
+            ],
+            "captions": [
+              "Spec glow",
+              "Slash 1",
+              "Slash 2",
+              "Recover"
+            ]
+          }
+        ]
       }
     },
     {
@@ -221,6 +286,71 @@
           }
         },
         "fallback": "activityMap"
+      },
+      "combat": {
+        "frameWidth": 64,
+        "frameHeight": 34,
+        "thumbWidth": 32,
+        "thumbHeight": 32,
+        "moves": [
+          {
+            "id": "mage",
+            "label": "mage",
+            "title": "Ancient Staff + Ice Barrage",
+            "thumb": "variants/crystal/combat/thumb-mage.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/crystal/combat/mage_00.png",
+              "variants/crystal/combat/mage_01.png",
+              "variants/crystal/combat/mage_02.png",
+              "variants/crystal/combat/mage_03.png"
+            ],
+            "captions": [
+              "Wind-up",
+              "Cast",
+              "Ice Barrage",
+              "Shatter"
+            ]
+          },
+          {
+            "id": "ranged",
+            "label": "ranged",
+            "title": "Rune Crossbow + bolt",
+            "thumb": "variants/crystal/combat/thumb-ranged.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/crystal/combat/ranged_00.png",
+              "variants/crystal/combat/ranged_01.png",
+              "variants/crystal/combat/ranged_02.png",
+              "variants/crystal/combat/ranged_03.png"
+            ],
+            "captions": [
+              "Aim",
+              "Fire",
+              "Flight",
+              "Hit"
+            ]
+          },
+          {
+            "id": "melee-spec",
+            "label": "melee spec",
+            "title": "Dragon Dagger (p++) special attack",
+            "thumb": "variants/crystal/combat/thumb-melee.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/crystal/combat/spec_00.png",
+              "variants/crystal/combat/spec_01.png",
+              "variants/crystal/combat/spec_02.png",
+              "variants/crystal/combat/spec_03.png"
+            ],
+            "captions": [
+              "Spec glow",
+              "Slash 1",
+              "Slash 2",
+              "Recover"
+            ]
+          }
+        ]
       }
     }
   ],

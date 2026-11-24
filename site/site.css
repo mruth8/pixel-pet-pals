@@ -69,6 +69,11 @@ iframe.live { border:0; background:transparent; display:block; max-width:100%; }
 .combat-stage { margin: 12px auto 0; width: fit-content; max-width: 100%; }
 .combat-stage[hidden] { display: none; }
 .combat-stage img { margin: 0 auto; border: 2px solid var(--ink); border-radius: 4px; background: var(--cream); image-rendering: pixelated; max-width: none; box-sizing: content-box; }
-.combat-cap { font-size: 13px; color: var(--muted); margin: 4px 0 0; overflow-wrap: break-word; }
+.combat-cap { font-size: 13px; line-height: 1.45; color: var(--muted); margin: 4px 0 0; overflow-wrap: break-word; min-height: 2.9em; } /* two lines reserved: no jump mid-move */
 /* Grid items must not grow to fit their content (e.g. a long move caption) on narrow phones. */
 .pets > .pet { min-width: 0; }
+/* Combat section: one picker card, the same size as a card in the 3-up grid. */
+.pets.one { grid-template-columns: minmax(0, 340px); justify-content: center; }
+.pick { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin: 0 0 12px; }
+.pick select { font: inherit; font-size: 15px; color: var(--ink); background: var(--card); border: 2px solid var(--ink); border-radius: 3px; padding: 2px 6px; min-width: 0; max-width: 100%; }
+[data-combat-try] .sub { min-height: 1.45em; }
