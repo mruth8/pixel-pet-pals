@@ -164,6 +164,71 @@
           }
         },
         "fallback": "activityMap"
+      },
+      "combat": {
+        "frameWidth": 64,
+        "frameHeight": 34,
+        "thumbWidth": 32,
+        "thumbHeight": 32,
+        "moves": [
+          {
+            "id": "mage",
+            "label": "mage",
+            "title": "Ancient Staff + Ice Barrage",
+            "thumb": "variants/zik/combat/thumb-mage.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/zik/combat/mage_00.png",
+              "variants/zik/combat/mage_01.png",
+              "variants/zik/combat/mage_02.png",
+              "variants/zik/combat/mage_03.png"
+            ],
+            "captions": [
+              "Wind-up",
+              "Cast",
+              "Ice Barrage",
+              "Shatter"
+            ]
+          },
+          {
+            "id": "ranged",
+            "label": "ranged",
+            "title": "Rune Crossbow + bolt",
+            "thumb": "variants/zik/combat/thumb-ranged.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/zik/combat/ranged_00.png",
+              "variants/zik/combat/ranged_01.png",
+              "variants/zik/combat/ranged_02.png",
+              "variants/zik/combat/ranged_03.png"
+            ],
+            "captions": [
+              "Aim",
+              "Fire",
+              "Flight",
+              "Hit"
+            ]
+          },
+          {
+            "id": "melee-spec",
+            "label": "melee spec",
+            "title": "Dragon Dagger (p++) special attack",
+            "thumb": "variants/zik/combat/thumb-melee.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/zik/combat/spec_00.png",
+              "variants/zik/combat/spec_01.png",
+              "variants/zik/combat/spec_02.png",
+              "variants/zik/combat/spec_03.png"
+            ],
+            "captions": [
+              "Spec glow",
+              "Slash 1",
+              "Slash 2",
+              "Recover"
+            ]
+          }
+        ]
       }
     },
     {
@@ -281,6 +346,71 @@
           }
         },
         "fallback": "activityMap"
+      },
+      "combat": {
+        "frameWidth": 64,
+        "frameHeight": 34,
+        "thumbWidth": 32,
+        "thumbHeight": 32,
+        "moves": [
+          {
+            "id": "mage",
+            "label": "mage",
+            "title": "Ancient Staff + Ice Barrage",
+            "thumb": "variants/sot/combat/thumb-mage.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/sot/combat/mage_00.png",
+              "variants/sot/combat/mage_01.png",
+              "variants/sot/combat/mage_02.png",
+              "variants/sot/combat/mage_03.png"
+            ],
+            "captions": [
+              "Wind-up",
+              "Cast",
+              "Ice Barrage",
+              "Shatter"
+            ]
+          },
+          {
+            "id": "ranged",
+            "label": "ranged",
+            "title": "Rune Crossbow + bolt",
+            "thumb": "variants/sot/combat/thumb-ranged.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/sot/combat/ranged_00.png",
+              "variants/sot/combat/ranged_01.png",
+              "variants/sot/combat/ranged_02.png",
+              "variants/sot/combat/ranged_03.png"
+            ],
+            "captions": [
+              "Aim",
+              "Fire",
+              "Flight",
+              "Hit"
+            ]
+          },
+          {
+            "id": "melee-spec",
+            "label": "melee spec",
+            "title": "Dragon Dagger (p++) special attack",
+            "thumb": "variants/sot/combat/thumb-melee.png",
+            "fps": 5,
+            "frameFiles": [
+              "variants/sot/combat/spec_00.png",
+              "variants/sot/combat/spec_01.png",
+              "variants/sot/combat/spec_02.png",
+              "variants/sot/combat/spec_03.png"
+            ],
+            "captions": [
+              "Spec glow",
+              "Slash 1",
+              "Slash 2",
+              "Recover"
+            ]
+          }
+        ]
       }
     }
   ],

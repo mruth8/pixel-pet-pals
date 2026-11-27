@@ -55,3 +55,41 @@ iframe.live { border:0; background:transparent; display:block; max-width:100%; }
 .widgets figure { min-width:0; max-width:100%; }
 .live-box { position:relative; max-width:100%; overflow:hidden; }
 .live-box iframe.live { position:absolute; left:0; top:0; transform-origin:0 0; max-width:none; }
+/* Combat row (layout 1A): a separate, centred row of three under walk/sleep/happy/party, same tile size. */
+.combat-h { font-size: 15px; margin: 14px 0 6px; color: var(--ink); }
+.anims.three { grid-template-columns: repeat(3, calc((100% - 24px) / 4)); justify-content: center; }
+.combat-btn { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.combat-btn img { width: 64px; height: auto; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; background: var(--cream); }
+.combat-btn .cap { display: block; white-space: nowrap; font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+.combat-btn:hover img { outline: 3px solid var(--tile); outline-offset: 1px; }
+.combat-btn:focus-visible img { outline: 3px solid var(--muted); outline-offset: 1px; } /* keyboard focus: brown (caption colour), QC L7 */
+.combat-btn:focus-visible { outline: none; }
+.combat-btn.on img { outline: 3px solid var(--accent); outline-offset: 1px; }
+.combat-btn.on .cap { color: var(--ink); }
+/* Moves play here, never in the hero picture: 64x34 frames at a crisp integer scale. */
+.combat-stage { margin: 12px auto 0; width: fit-content; max-width: 100%; }
+.combat-stage[hidden] { display: none; }
+.combat-stage img { margin: 0 auto; border: 2px solid var(--ink); border-radius: 4px; background: var(--cream); image-rendering: pixelated; max-width: none; box-sizing: content-box; }
+.combat-cap { font-size: 13px; line-height: 1.45; color: var(--muted); margin: 4px 0 0; overflow-wrap: break-word; min-height: 2.9em; } /* two lines reserved: no jump mid-move */
+/* Grid items must not grow to fit their content (e.g. a long move caption) on narrow phones. */
+.pets > .pet { min-width: 0; }
+/* Combat section (switcher 1A): all 22 pets as picture buttons next to the Combat card; tap one to switch the card. */
+.combat-try { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
+.combat-try > .pet { flex: 0 0 340px; width: 340px; min-width: 0; }
+.pet-grid { display: grid; grid-template-columns: repeat(6, 88px); gap: 10px 8px; align-content: start; }
+.pet-tile { display: block; align-self: start; width: 100%; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--muted); cursor: pointer; }
+.pet-tile img { width: 64px; height: 64px; image-rendering: pixelated; margin: 0 auto; border: 2px solid var(--ink); border-radius: 3px; background: var(--card); }
+.pet-tile span { display: block; font-size: 13px; line-height: 1.2; margin-top: 4px; text-align: center; }
+.pet-tile:hover img { outline: 3px solid var(--tile); outline-offset: 1px; }
+.pet-tile:focus-visible img { outline: 3px solid var(--muted); outline-offset: 1px; } /* keyboard focus: brown (caption colour), QC L7 */
+.pet-tile:focus-visible { outline: none; }
+.pet-tile.on img { outline: 3px solid var(--accent); outline-offset: 1px; }
+.pet-tile.on span { color: var(--ink); }
+.combat-btn.on:focus-visible img, .pet-tile.on:focus-visible img { outline-color: var(--muted); }
+[data-combat-try] .sub { min-height: 1.45em; }
+/* Too narrow for grid + card side by side: the grid sits above the card and fills the width. */
+@media (max-width: 1000px) {
+  .combat-try { flex-direction: column; align-items: center; gap: 20px; }
+  .pet-grid { width: 100%; max-width: 568px; grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); gap: 10px 6px; }
+  .combat-try > .pet { flex: none; width: 100%; max-width: 340px; }
+}
